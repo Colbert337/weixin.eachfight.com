@@ -20,6 +20,8 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
+		echo '猪游纪';
+		echo phpinfo();
 		$this->load->view('welcome_message');
 	}
 }
