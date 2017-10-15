@@ -20,7 +20,5 @@ class User extends CI_Controller {
 	 */
 	public function index()
 	{
-		echo '欢迎';exit;
-		$this->load->view('welcome_message');
 	}
 }
