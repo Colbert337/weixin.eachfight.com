@@ -20,7 +20,40 @@ class Home extends CI_Controller {
 	 */
 	public function index()
 	{
-		echo '欢迎来到猪游纪的王国!!';exit;
-		$this->load->view('welcome_message');
+        $zip = new \ZipArchive;
+        $toDir = "public/zip";
+        if(!file_exists($toDir)) {
+            mkdir($toDir);
+        }
+        if ($zip->open('test.zip') === TRUE)
+        {
+            $zip->extractTo($toDir);//假设解压缩到在当前路径下images文件夹的子文件夹php
+            $zip->close();//关闭处理的zip文件
+        }
+        var_dump($zip);exit;
+        exit;
+
+        $zip = new \ZipArchive;
+        $zipfile = "test.tar";
+        $res = $zip->open($zipfile);
+
+        $toDir = "./public/zip";
+        if(!file_exists($toDir)) {
+            mkdir($toDir);
+        }
+        $docnum = $zip->numFiles;
+        for($i = 0; $i < $docnum; $i++) {
+            $statInfo = $zip->statIndex($i);
+            var_dump($statInfo);exit;
+            if($statInfo['crc'] == 0) {
+                //新建目录
+                mkdir($toDir.'/'.substr($statInfo['name'], 0,-1));
+            } else {
+                //拷贝文件
+                copy('zip://'.$zipfile.'#'.$statInfo['name'], $toDir.'/'.$statInfo['name']);
+            }
+        }
+
+        print_r(scandir($toDir));
 	}
 }
