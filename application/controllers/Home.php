@@ -20,6 +20,7 @@ class Home extends CI_Controller {
 	 */
 	public function index()
 	{
+	    
         $zip = new \ZipArchive;
         $toDir = "public/zip";
         if(!file_exists($toDir)) {
