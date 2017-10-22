@@ -25,14 +25,15 @@ class Weixin extends CI_Controller
     //微信用户进行公众号授权
     public function oauth(){
         $post = $this->input->get();
-        $response = $this->wechat->oauth->with(['state'=>urlencode($post['target_url'])??''])->redirect();
+        $response = $this->wechat->oauth->with(['state'=>urlencode($post['callback'])??''])->redirect();
         $response->send();
     }
 
     //回调地址，获取用户基本信息  第一次注册入库
     public function oauthBack(){
         $response = $this->wechat->oauth->user();
-        set_cookie('user_token',$response->id,7200);
+        var_dump($response);exit;
+        set_cookie('token',$response->id,7200);
         redirect(urldecode($this->input->get('state')));
     }
 }
