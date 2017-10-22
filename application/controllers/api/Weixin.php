@@ -5,36 +5,41 @@ use EasyWeChat\Foundation\Application;
 class Weixin extends CI_Controller
 {
 
-    protected $wechat = NULL;
+    private $wechat = 'wechat_user';
 
     public function __construct()
     {
         parent::__construct();
-        //加载wechat配置文件
         $this->load->config("wechat");
-        //实例化easywechat包
         $this->wechat = new Application(config_item("wechat"));
+
+        $this->load->helper('cookie');
     }
 
-    public function index(){
-        echo "发起授权请求：<a href='./oauth'>./oauth</a><br>";
-        echo "获取用户信息：<a href='./user'>./user</a><br>";
-    }
-
+    //根据用户openid获取用户基本信息
     public function user(){
-        $user = $this->wechat->user->get("oRGOms1oh2TtkvHK-FoQA4tnWH_U");
+        $user = $this->wechat->user->get("o05NB0w96SrxDgpS6ZzOapUNq1WY");
         var_dump($user);
     }
 
     //微信用户进行公众号授权
     public function oauth(){
-        $response = $this->wechat->oauth->redirect();
+        $post = $this->input->get();
+        $response = $this->wechat->oauth->with(['state'=>$post['target_url']??''])->redirect();
         $response->send();
+
+//        set_cookie('wechat_user',100,1200);
+//        var_dump(get_cookie('wechat_user'));exit;
+//        if(!$this->session->has_userdata($this->wechat)){
+//            $response = $this->wechat->oauth->with(['state'=>100])->redirect();
+//            $response->send();
+//        }
+
     }
 
-    //回调地址，在此拿到用户的信息及access_token相关信息
+    //回调地址，获取用户基本信息  第一次注册入库
     public function oauthBack(){
         $response = $this->wechat->oauth->user();
-        var_dump($response);
+        var_dump($this->wechat->oauth);
     }
 }

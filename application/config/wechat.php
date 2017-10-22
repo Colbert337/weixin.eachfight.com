@@ -36,8 +36,8 @@ $config["wechat"] = [
      * callback：OAuth授权完成后的回调页地址(如果使用中间件，则随便填写。。。)
      */
     'oauth' => [
-        'scopes'   => 'snsapi_userinfo',
-        'callback' => 'api/common/oauth',
+        'scopes'   => ['snsapi_userinfo'],
+        'callback' => 'api/weixin/oauthBack',
     ],
 
 //    /**
