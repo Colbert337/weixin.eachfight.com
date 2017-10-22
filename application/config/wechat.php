@@ -26,7 +26,7 @@ $config["wechat"] = [
      */
     'log' => [
         'level' => 'debug',
-        'file'  => '/www/api.eachfight.com/application/logs/wechat.log',
+        'file'  => '/data/api.eachfight.com/application/logs/wechat.log',
     ],
 
     /*
@@ -36,7 +36,7 @@ $config["wechat"] = [
      * callback：OAuth授权完成后的回调页地址(如果使用中间件，则随便填写。。。)
      */
     'oauth' => [
-        'scopes'   => ['snsapi_userinfo'],
+        'scopes'   =>['snsapi_userinfo'],
         'callback' => 'api/weixin/oauthBack',
     ],
 
