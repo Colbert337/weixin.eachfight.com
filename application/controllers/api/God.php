@@ -8,6 +8,7 @@ class God extends CI_Controller
 
     public function index()
     {
+        dump($this->session->userdata());
         $user = $this->session->userdata($this->wechat);
         dump($user);
     }
