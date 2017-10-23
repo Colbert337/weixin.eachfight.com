@@ -3,19 +3,16 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Common extends CI_Controller
 {
+    private $wechat = 'wechat_user';
 
     public function __construct()
     {
         parent::__construct();
     }
 
-    /**
-     *微信授权登陆
-     */
-    public function oauth()
-    {
-        $url = $_SERVER['REQUEST_URI'];
-        $weixin = new Weixin();
-        $weixin->oauth($url);
+    public function index(){
+        $user = $this->session->userdata($this->wechat);
+        dump($user);
     }
+
 }

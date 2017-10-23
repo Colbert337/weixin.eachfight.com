@@ -4,7 +4,6 @@ use EasyWeChat\Foundation\Application;
 
 class Weixin extends CI_Controller
 {
-
     private $wechat = 'wechat_user';
 
     public function __construct()
@@ -12,7 +11,6 @@ class Weixin extends CI_Controller
         parent::__construct();
         $this->load->config("wechat");
         $this->wechat = new Application(config_item("wechat"));
-
         $this->load->helper('cookie');
     }
 
@@ -24,14 +22,18 @@ class Weixin extends CI_Controller
 
     //微信用户进行公众号授权
     public function oauth(){
-        $post = $this->input->get();
-        $response = $this->wechat->oauth->with(['state'=>urlencode($post['url'])??''])->redirect();
-        $response->send();
+        if(!$this->session->has_userdata($this->wechat)){
+            $response = $this->wechat->oauth->with(['state'=>urlencode($this->input->get('url'))])->redirect();
+            $response->send();
+        }else{
+            redirect(urldecode($this->input->get('url')));
+        }
     }
 
     //回调地址，获取用户基本信息  第一次注册入库
     public function oauthBack(){
         $response = $this->wechat->oauth->user();
+        $this->session->set_userdata($this->wechat, $response->toArray());
         set_cookie('token',$response->id,time()+7200,'.eachfight.com','/');
         redirect(urldecode($this->input->get('state')));
     }
