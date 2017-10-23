@@ -33,10 +33,9 @@ class Weixin extends CI_Controller
     //回调地址，获取用户基本信息  第一次注册入库
     public function oauthBack(){
         $user = $this->wechat->oauth->user();
-//        $userArr = $user->toArray();
-        $this->session->set_userdata($this->wechat, $user->id);
-        $user = $this->session->userdata($this->wechat);
-        set_cookie('token',$user->id,time()+7200,'.eachfight.com','/');
+        $userArr = $user->toArray();
+        $this->session->set_userdata($this->wechat, $userArr['id']);
+        set_cookie('token',$userArr['id'],time()+7200,'.eachfight.com','/');
         redirect(urldecode($this->input->get('state')));
     }
 }
