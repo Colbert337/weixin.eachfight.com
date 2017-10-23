@@ -12,7 +12,7 @@ class Common extends CI_Controller
 
     public function index(){
         $user = $this->session->userdata($this->wechat);
-        dump($user);
+        dump(100);
     }
 
 }
