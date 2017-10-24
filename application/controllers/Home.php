@@ -2,6 +2,8 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 class Home extends CI_Controller
 {
+    private $wechat = 'wechat_user';
+
     public function __construct()
     {
         parent::__construct();
@@ -10,6 +12,10 @@ class Home extends CI_Controller
 
 	public function index()
 	{
+        $userArr = [];
+        $this->session->set_userdata($this->wechat, $userArr);
+        dump($this->session->userdata($this->wechat));
+
         set_cookie('token',1000,time()+7200,'.eachfight.com','/');
         dump(get_cookie('token'));
         $zip = new \ZipArchive;
