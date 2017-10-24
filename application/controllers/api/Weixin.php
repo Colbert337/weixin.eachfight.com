@@ -34,8 +34,8 @@ class Weixin extends CI_Controller
     public function oauthBack(){
         $user = $this->wechat->oauth->user();
         $userArr = $user->toArray();
-        $this->session->set_userdata(['guochao'=>100]);
-        dump($this->session->userdata('guochao'));exit;
+        $this->session->set_userdata(['wechat_user'=>$userArr['id']]);
+        dump($this->session->userdata('wechat_user'));exit;
         set_cookie('token',$userArr['id'],time()+7200,'.eachfight.com','/');
         redirect(urldecode($this->input->get('state')));
     }
