@@ -12,8 +12,6 @@ class Home extends CI_Controller
 
 	public function index()
 	{
-        $userArr = ['id'=>'10000','name'=>'2000000000'];
-        $this->session->set_userdata($this->wechat, $userArr['id']);
         dump($this->session->userdata($this->wechat));exit;
 
         set_cookie('token',1000,time()+7200,'.eachfight.com','/');
