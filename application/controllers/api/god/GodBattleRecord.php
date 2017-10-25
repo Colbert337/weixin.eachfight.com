@@ -83,15 +83,13 @@ class GodBattleRecord extends MY_Controller
                 $this->response(['status'=>false, 'message'=>$val.' 不能为空'], MY_Controller::HTTP_UNPROCESSABLE_ENTITY);
                 break;
             }
-            // 数据格式
-            if($data['order_id'] < 0 || !is_numeric($data['order_id'])){
-                $this->response(['status'=>false, 'msg'=>'订单数据类型错误'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
-                break;
-            }
-            if($data['victory_num'] > 3 || $data['victory_num'] < 0 || !is_numeric($data['victory_num'])){
-                $this->response(['status'=>false, 'msg'=>'胜利局数数据类型错误'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
-                break;
-            }
+        }
+        // 数据格式
+        if($data['order_id'] < 0 || !is_numeric($data['order_id'])){
+            $this->response(['status'=>false, 'msg'=>'订单数据类型错误'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        if($data['victory_num'] > 3 || $data['victory_num'] < 0 || !is_numeric($data['victory_num'])){
+            $this->response(['status'=>false, 'msg'=>'胜利局数数据类型错误'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

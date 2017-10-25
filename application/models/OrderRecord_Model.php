@@ -90,7 +90,7 @@ class OrderRecord_Model extends CI_Model {
 		$this->db->insert(self::TBL_ORDER_RECORD, $data);
 
 		// 变更订单表状态
-        $order = array('status' => 7, 'sumbit_time' => $data['create_time']);
+        $order = array('status' => ORDER_GOD_SUB_ORDER, 'sumbit_time' => $data['create_time']);
 
         $where = $this->db->where('id', $data['order_id']);
 

@@ -83,3 +83,20 @@ defined('EXIT_USER_INPUT')     OR define('EXIT_USER_INPUT', 7); // invalid user 
 defined('EXIT_DATABASE')       OR define('EXIT_DATABASE', 8); // database error
 defined('EXIT__AUTO_MIN')      OR define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+/*
+|--------------------------------------------------------------------------
+| 订单状态
+|--------------------------------------------------------------------------
+
+| 统一管理，方便扩展
+*/
+defined('ORDER_BEGIN_STATUS')        OR define('ORDER_BEGIN_STATUS', 1); //用户下单
+defined('ORDER_CANCER_NO_ACCEPT')    OR define('ORDER_CANCER_NO_ACCEPT', 2); //未接取消
+defined('ORDER_CANCER_ACCEPTED')     OR define('ORDER_CANCER_ACCEPTED', 3); //已接取消
+defined('ORDER_GOD_GRAB')            OR define('ORDER_GOD_GRAB', 4); //大神抢单
+defined('ORDER_USER_PREPARE')        OR define('ORDER_USER_PREPARE', 5); //用户准备
+defined('ORDER_COMPLETE_GAME')       OR define('ORDER_COMPLETE_GAME', 6); //完成游戏
+defined('ORDER_GOD_SUB_ORDER')       OR define('ORDER_GOD_SUB_ORDER', 7); //大神提交战绩
+defined('ORDER_USER_SHENSU')         OR define('ORDER_USER_SHENSU', 8); //用户发起申诉
+defined('ORDER_COMPLETE_ORDER')      OR define('ORDER_COMPLETE_ORDER', 9); //订单完成（胜0局或用户确认战绩或申诉完成）
