@@ -52,4 +52,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'home';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
-$route['god/getOrderStatus'] = 'api/god/index_get';
+// 大神端路由
+$route['api/GodBattleRecord/(:num)']['get'] = 'api/god/GodBattleRecord/index_get/$1';//获取一条战绩
+$route['api/GodBattleRecord']['get'] = 'api/god/GodBattleRecord/index_get';//获取一条战绩
+$route['api/GodBattleRecord']['post'] = 'api/god/GodBattleRecord/index_post';//提交战绩
