@@ -2257,4 +2257,28 @@ abstract class MY_Controller extends CI_Controller {
             exit;
         }
     }
+
+    /**
+     * 格式化返回数据
+     * @param $status 200->成功 502->失败 401->请求数据有误 402->返回数据有误
+     * @param $msg
+     * @param array $data
+     */
+    public function responseJson($status, $msg, $data= [])
+    {
+        if(!in_array( $status, [200, 502, 401])){
+            $this->response(['status'=> 402, 'msg'=>"返回状态码不正确，请联系开发者！"]);
+        }
+        switch ($status) {
+            case '200':
+                $http_code = self::HTTP_CREATED;
+                break;
+            case '400':
+                $http_code = self::HTTP_INTERNAL_SERVER_ERROR;
+                break;
+            default:
+                $http_code = self::HTTP_CREATED;
+        }
+        $this->response(['status'=>$status, 'msg'=>$msg, 'data'=>$data], $http_code);
+    }
 }

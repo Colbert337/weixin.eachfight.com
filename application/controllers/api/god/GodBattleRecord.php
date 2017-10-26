@@ -34,9 +34,9 @@ class GodBattleRecord extends MY_Controller
             $data = $this->orderRecord->getOrderRecords();
         }
         if(!empty($data)){
-            $this->response(['status'=>true, 'msg'=>'数据查询成功', 'data'=>$data],MY_Controller::HTTP_OK);
+            $this->responseJson(200, '数据获取成功', $data);
         }else{
-            $this->response(['status'=>false, 'msg'=>'数据查询失败'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            $this->responseJson(502, '数据获取失败');
         }
 
     }
@@ -50,11 +50,11 @@ class GodBattleRecord extends MY_Controller
         $this->validPost($post);
         // 是否已经提交战绩
         if($this->orderRecord->checkExist($post['order_id'])){
-            $this->response(['status'=>false, 'msg'=>'该订单已经提交过战绩了'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            $this->responseJson(401, '该订单已经提交过战绩了');
         }
         // 是否订单是否存在
         if(!$this->orderRecord->checkOrder($post['order_id'])){
-            $this->response(['status'=>false, 'msg'=>'该订单不存在'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            $this->responseJson(401, '该订单不存在');
         }
         $dataField = ['order_id'=>'订单ID', 'victory_num'=>'胜利局数'];
         $data = [];
@@ -66,8 +66,7 @@ class GodBattleRecord extends MY_Controller
         // 提交数据
         $bool = $this->orderRecord->submitOrderRecord($data);
         if ($bool) $flag = true;
-        $flag ? $this->response(['status'=>true, 'msg'=>'数据写入成功', 'data'=>$data],MY_Controller::HTTP_CREATED):
-            $this->response(['status'=>false, 'msg'=>'数据写入失败'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
+        $flag ? $this->responseJson(200, '数据写入成功', $data) : $this->responseJson(200, '数据写入失败');
     }
 
     /**
@@ -80,16 +79,16 @@ class GodBattleRecord extends MY_Controller
         foreach ($require as $key => $val) {
             // 非空验证
             if (!isset($data[$key]) || empty($data[$key])) {
-                $this->response(['status'=>false, 'message'=>$val.' 不能为空'], MY_Controller::HTTP_UNPROCESSABLE_ENTITY);
+                $this->responseJson(401, $val.' 不能为空');
                 break;
             }
         }
         // 数据格式
         if($data['order_id'] < 0 || !is_numeric($data['order_id'])){
-            $this->response(['status'=>false, 'msg'=>'订单数据类型错误'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            $this->responseJson(401, ' 订单数据类型错误');
         }
         if($data['victory_num'] > 3 || $data['victory_num'] < 0 || !is_numeric($data['victory_num'])){
-            $this->response(['status'=>false, 'msg'=>'胜利局数数据类型错误'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
+            $this->responseJson(401, ' 胜利局数数据类型错误');
         }
     }
 }
