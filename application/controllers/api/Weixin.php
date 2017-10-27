@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 use EasyWeChat\Foundation\Application;
 
-class Weixin extends CI_Controller
+class Weixin extends MY_Controller
 {
     private $wechat = 'wechat_user';
 
@@ -33,7 +33,7 @@ class Weixin extends CI_Controller
 
     //回调地址，获取用户基本信息  第一次注册入库
     public function oauthBack(){
-        dump($this->wechat->oauth);exit;
+//      dump($this->wechat->oauth);exit;
         $user = $this->wechat->oauth->user();
         $userArr = $user->toArray();
         $this->session->set_userdata(['wechat_user'=>$userArr['id']]);
@@ -43,9 +43,8 @@ class Weixin extends CI_Controller
 
     //前端给code 授权获取用户信息 注册入库
     public function weboauth(){
-//      $code = $this->input->get('code');
         $user = $this->wechat->oauth->user();
-//      $user = $this->wechat->oauth->with(['code'=>$code])->user();
-        dump($user->id);
+        set_cookie('token',$user->id,time()+7200,'.eachfight.com','/');
+        $this->responseJson(200, '数据获取成功', $user->toArray());
     }
 }
