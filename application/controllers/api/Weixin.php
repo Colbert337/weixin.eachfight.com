@@ -22,11 +22,12 @@ class Weixin extends CI_Controller
 
     //微信用户进行公众号授权
     public function oauth(){
+        $callback = urldecode($this->input->get('url')).'?code=200';
         if(!$this->session->has_userdata($this->wechat)){
-            $response = $this->wechat->oauth->with(['state'=>urlencode($this->input->get('url'))])->redirect();
+            $response = $this->wechat->oauth->with(['state'=>urlencode($callback)])->redirect();
             $response->send();
         }else{
-            redirect(urldecode($this->input->get('url')));
+            redirect($callback);
         }
     }
 
@@ -36,6 +37,13 @@ class Weixin extends CI_Controller
         $userArr = $user->toArray();
         $this->session->set_userdata(['wechat_user'=>$userArr['id']]);
         set_cookie('token',$userArr['id'],time()+7200,'.eachfight.com','/');
-        redirect(urldecode($this->input->get('state')));
+//        redirect(urldecode($this->input->get('state')));
+    }
+
+    //前端给code 授权
+    public function weboauth(){
+        $code = $this->input->get('code');
+        $user = $this->wechat->oauth->with(['code'=>$code])->user();
+        dump($this->wechat->oauth,$user);
     }
 }
