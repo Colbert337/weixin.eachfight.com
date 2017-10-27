@@ -41,10 +41,11 @@ class Weixin extends CI_Controller
         redirect(urldecode($this->input->get('state')));
     }
 
-    //前端给code 授权
+    //前端给code 授权获取用户信息 注册入库
     public function weboauth(){
-        $code = $this->input->get('code');
-        $user = $this->wechat->oauth->with(['code'=>$code])->user();
-        dump($this->wechat->oauth,$user);
+//      $code = $this->input->get('code');
+        $user = $this->wechat->oauth->user();
+//      $user = $this->wechat->oauth->with(['code'=>$code])->user();
+        dump($user->id);
     }
 }
