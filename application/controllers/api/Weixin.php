@@ -12,14 +12,9 @@ class Weixin extends CI_Controller
         parent::__construct();
         $this->load->config("wechat");
         $this->wechat = new Application(config_item("wechat"));
-        $this->load->helper('cookie');
-    }
 
-    //根据用户openid获取用户基本信息
-    public function user()
-    {
-        $user = $this->wechat->user->get("o05NB0w96SrxDgpS6ZzOapUNq1WY");
-        var_dump($user);
+        $this->load->helper('cookie');
+        $this->load->model('User_Model');
     }
 
     //微信用户进行公众号授权
@@ -37,7 +32,6 @@ class Weixin extends CI_Controller
     //回调地址，获取用户基本信息  第一次注册入库
     public function oauthBack()
     {
-//      dump($this->wechat->oauth);exit;
         $user = $this->wechat->oauth->user();
         $userArr = $user->toArray();
         $this->session->set_userdata(['wechat_user' => $userArr['id']]);
@@ -45,12 +39,39 @@ class Weixin extends CI_Controller
         redirect(urldecode($this->input->get('state')));
     }
 
-    //前端给code 授权获取用户信息 注册入库
+
+    /**
+     * 前端给code 授权获取用户信息 注册入库
+     */
     public function weboauth()
     {
-        $user = $this->wechat->oauth->user();
-        set_cookie('token', $user->id, time() + 7200, '.eachfight.com', '/');
-        echo json_encode(['code' => 200, 'msg' => '数据获取成功', 'data' => $user->toArray()]);
-        exit;
+        $User_Model = new User_Model();
+        $code = $this->input->get('code');
+        if (empty($code)) $this->responseToJson(502, 'code参数缺少');
+
+        try {
+            if (!$this->session->has_userdata($this->wechat)) {
+                $user = $this->wechat->oauth->user();
+                $data = $user->toArray();
+
+                $this->session->set_userdata([(string)$this->wechat => $data]);
+            } else {
+                $data = $this->session->userdata($this->wechat);
+            }
+
+            if (!$this->User_Model->CheckRegister($data['id'])) {  //没有注册过
+                $User_Model->insert([
+                    'openid' => $data['id'],
+                    'nickname' => $data['nickname'],
+                    'gender' => $data['sex'],  //1时是男性，值为2时是女性，值为0时是未知
+                    'headimg_url' => $data['headimgurl'],
+                    'create_time' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            $this->responseToJson(200, '登陆成功', $data);
+        } catch (Exception $e) {
+            $this->responseToJson(502, $e->getMessage());
+        }
     }
 }
