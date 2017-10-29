@@ -5,7 +5,7 @@ use EasyWeChat\Foundation\Application;
 
 class Weixin extends CI_Controller
 {
-    private $wechat = 'wechat_user';
+    private $wechat_key = 'wechat_user';
 
     public function __construct()
     {
@@ -21,7 +21,7 @@ class Weixin extends CI_Controller
     public function oauth()
     {
         $callback = urldecode($this->input->get('url')) . '?code=200';
-        if (!$this->session->has_userdata($this->wechat)) {
+        if (!$this->session->has_userdata($this->wechat_key)) {
             $response = $this->wechat->oauth->with(['state' => urlencode($callback)])->redirect();
             $response->send();
         } else {
@@ -34,7 +34,7 @@ class Weixin extends CI_Controller
     {
         $user = $this->wechat->oauth->user();
         $userArr = $user->toArray();
-        $this->session->set_userdata(['wechat_user' => $userArr['id']]);
+        $this->session->set_userdata([$this->wechat_key => $userArr['id']]);
         set_cookie('token', $userArr['id'], time() + 7200, '.eachfight.com', '/');
         redirect(urldecode($this->input->get('state')));
     }
@@ -50,13 +50,12 @@ class Weixin extends CI_Controller
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
         try {
-            if (!$this->session->has_userdata($this->wechat)) {
+            if (!$this->session->has_userdata($this->wechat_key)) {
                 $user = $this->wechat->oauth->user();
                 $data = $user->toArray();
-
-                $this->session->set_userdata([(string)$this->wechat => $data]);
+                $this->session->set_userdata([$this->wechat_key => $data]);
             } else {
-                $data = $this->session->userdata($this->wechat);
+                $data = $this->session->userdata($this->wechat_key);
             }
 
             if (!$this->User_Model->CheckRegister($data['id'])) {  //没有注册过
