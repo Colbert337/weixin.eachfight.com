@@ -7,9 +7,9 @@
  * @category	Models
  * @author		fengchen <fengchenorz@gmail.com>
  */
-class OrderRecord_Model extends CI_Model {
+class OrderRecord_Model extends MY_Model {
 
-	const TBL_ORDER_RECORD = 'order_record';
+	const TBL = 'order_record';
     const TBL_ORDER = 'order';
 	
 	/**
@@ -29,47 +29,8 @@ class OrderRecord_Model extends CI_Model {
     function __construct()
     {
         parent::__construct();
-        $this->load->database();
+
     }
-	
-	/**
-     * 根据ID获取单条战绩
-     * 
-     * @access public
-	 * @param int $id 战绩ID
-     * @return array - 战绩信息
-     */
-	public function getOrderRecordById($id)
-	{
-		$data = array();
-		
-		$this->db->select('*')->from(self::TBL_ORDER_RECORD)->where('id', $id)->limit(1);
-		$query = $this->db->get();
-		if($query->num_rows() == 1)
-		{
-			$data = $query->row_array();
-		}
-		$query->free_result();
-		
-		return $data;
-	}
-
-	/**
-     * 获取所有战绩
-     * 
-     * @access public
-     * @return array - 战绩信息
-     */
-	public function getOrderRecords()
-	{
-        $query = $this->db->get(self::TBL_ORDER_RECORD);
-
-        $data = $query->result_array();
-
-        $query->free_result();
-
-        return $data;
-	}
 	
 	/**
     * 提交战绩
@@ -87,7 +48,7 @@ class OrderRecord_Model extends CI_Model {
 		// 战绩表数据新增
         $this->db->trans_start();
 
-		$this->db->insert(self::TBL_ORDER_RECORD, $data);
+		$this->insert($data);
 
 		// 变更订单表状态
         $order = array('status' => ORDER_GOD_SUB_ORDER, 'sumbit_time' => $data['create_time']);
@@ -117,7 +78,7 @@ class OrderRecord_Model extends CI_Model {
 	{
 		if(!empty($order_id))
 		{
-			$this->db->select('id')->from(self::TBL_ORDER_RECORD)->where("order_id", $order_id);
+			$this->db->select('id')->from(self::TBL)->where("order_id", $order_id);
 			
 			$query = $this->db->get();
 

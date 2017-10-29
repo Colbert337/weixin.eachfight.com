@@ -56,3 +56,7 @@ $route['translate_uri_dashes'] = FALSE;
 $route['api/GodBattleRecord/(:num)']['get'] = 'api/god/GodBattleRecord/index_get/$1';//获取一条战绩
 $route['api/GodBattleRecord']['get'] = 'api/god/GodBattleRecord/index_get';//获取一条战绩
 $route['api/GodBattleRecord']['post'] = 'api/god/GodBattleRecord/index_post';//提交战绩
+
+$route['api/GodApply/(:num)']['get'] = 'api/god/GodApply/index_get/$1';//获取一条大神申请
+$route['api/GodApply']['get'] = 'api/god/GodApply/index_get';//获取多条大神申请
+$route['api/GodApply']['post'] = 'api/god/GodApply/index_post';//提交大神申请信息

@@ -27,11 +27,11 @@ class GodBattleRecord extends MY_Controller
         $id = $this->uri->segment(3);
         if(!empty($id)){
             if (!is_numeric($id)){
-                $this->response(['status'=>false, 'msg'=>'战绩ID参数错误'],MY_Controller::HTTP_INTERNAL_SERVER_ERROR);
+                $this->responseJson(502,'战绩ID参数错误');
             }
-            $data = $this->orderRecord->getOrderRecordById($id);
+            $data = $this->orderRecord->scalar($id);
         }else{
-            $data = $this->orderRecord->getOrderRecords();
+            $data = $this->orderRecord->fetchAll();
         }
         if(!empty($data)){
             $this->responseJson(200, '数据获取成功', $data);
