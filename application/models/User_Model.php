@@ -37,15 +37,11 @@ class User_Model extends MY_Model
      */
     public function CheckRegister(string $openid)
     {
-        if (!empty($openid)) {
-            $this->db->select('id')->from(self::TBL)->where("openid", $openid);
-            $query = $this->db->get();
-            $num = $query->num_rows();
-            $query->free_result();
-            return ($num > 0) ? TRUE : FALSE;
-        }
-
-        return FALSE;
+        $this->db->select('id')->from(self::TBL)->where("openid", $openid);
+        $query = $this->db->get();
+        $num = $query->num_rows();
+        $query->free_result();
+        return ($num > 0) ? TRUE : FALSE;
     }
 
 
