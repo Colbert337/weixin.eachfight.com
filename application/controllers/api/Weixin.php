@@ -47,6 +47,9 @@ class Weixin extends CI_Controller
     {
         $User_Model = new User_Model();
         $code = $this->input->get('code');
+
+        log_message('info', '获取到的code:'.$code);
+
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
         try {
