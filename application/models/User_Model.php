@@ -35,7 +35,7 @@ class User_Model extends MY_Model
      * @param string $openid
      * @return bool
      */
-    public function CheckRegister(string $openid)
+    public function CheckRegister($openid)
     {
         $this->db->select('id')->from(self::TBL)->where("openid", $openid);
         $query = $this->db->get();
