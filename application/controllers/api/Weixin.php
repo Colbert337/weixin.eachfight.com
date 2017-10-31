@@ -47,26 +47,23 @@ class Weixin extends CI_Controller
     {
         $User_Model = new User_Model();
         $code = $this->input->get('code');
-
         log_message('info', '获取到的code:'.$code);
-
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
         try {
-            if (!$this->session->has_userdata($this->wechat_key)) {
+            if ($this->session->has_userdata($this->wechat_key)) {
                 $user = $this->wechat->oauth->user();
                 $data = $user->getOriginal();
-
-                log_message('info', '获取到的数据:'.json_encode($data));
-
+                
+                log_message('info', '获取到的用户数据:'.json_encode($data));
                 $this->session->set_userdata([$this->wechat_key => $data]);
             } else {
                 $data = $this->session->userdata($this->wechat_key);
             }
 
-            if (!$this->User_Model->CheckRegister($data['id'])) {  //没有注册过
+            if (!$this->User_Model->CheckRegister($data['openid'])) {  //没有注册过
                 $User_Model->insert([
-                    'openid' => $data['id'],
+                    'openid' => $data['openid'],
                     'nickname' => $data['nickname'],
                     'gender' => $data['sex'],  //1时是男性，值为2时是女性，值为0时是未知
                     'headimg_url' => $data['headimgurl'],
