@@ -11,6 +11,8 @@ class User extends CI_Controller
 
     public function index()
     {
+        $use = $this->session->has_userdata('wechat_user');
+        dump($use);exit;
         header('Content-Type: text/plain; charset=utf-8');
         $demo = new \App\Libraries\Sms();
         $response = $demo->sendSms(
