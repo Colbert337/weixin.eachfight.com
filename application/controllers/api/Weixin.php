@@ -53,9 +53,9 @@ class Weixin extends CI_Controller
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
         try {
-            if (!$this->session->has_userdata($this->wechat_key)) {
+            if ($this->session->has_userdata($this->wechat_key)) {
                 $user = $this->wechat->oauth->user();
-                $data = $user->toArray();
+                $data = $user->getOriginal();
                 $this->session->set_userdata([$this->wechat_key => $data]);
             } else {
                 $data = $this->session->userdata($this->wechat_key);
