@@ -16,7 +16,7 @@ class Comm extends CI_Controller
      */
     public function SendSms()
     {
-        $mobile = $this->input->get('mobile');
+        $mobile = $this->input->post('mobile');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
         $code = rand(100000, 999999);
         $response = $this->sms->sendSms("猪游纪", "SMS_107810012", $mobile, ['code' => $code]);
@@ -32,7 +32,8 @@ class Comm extends CI_Controller
 
     public function index()
     {
-        $this->redislib->setex(100, 200000, '600');
+        dump($this->redislib);
+        $this->redislib->set(100, 200000, '600');
         dump($this->redislib->get(100));
         exit;
     }
