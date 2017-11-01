@@ -7,13 +7,13 @@ class User extends CI_Controller
     {
         parent::__construct();
         $this->load->model('GameLevel_Model');
+        $this->load->library('Sms');
     }
 
     public function index()
     {
         header('Content-Type: text/plain; charset=utf-8');
-        $demo = new \App\Libraries\Sms();
-        $response = $demo->sendSms(
+        $response = $this->sms->sendSms(
             "猪游纪", // 短信签名
             "SMS_107810012", // 短信模板编号
             "13127529625", // 短信接收者

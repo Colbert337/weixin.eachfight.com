@@ -6,7 +6,6 @@
  * Time: 22:32
  */
 
-namespace App\Libraries;
 use Aliyun\Core\Config;
 use Aliyun\Core\Profile\DefaultProfile;
 use Aliyun\Core\DefaultAcsClient;
