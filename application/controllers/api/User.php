@@ -11,19 +11,19 @@ class User extends CI_Controller
 
     public function index()
     {
-        $use = $this->session->has_userdata('wechat_user');
-        dump($use);exit;
         header('Content-Type: text/plain; charset=utf-8');
         $demo = new \App\Libraries\Sms();
         $response = $demo->sendSms(
-            "短信签名", // 短信签名
-            "SMS_0000001", // 短信模板编号
+            "猪游纪", // 短信签名
+            "SMS_107810012", // 短信模板编号
             "13127529625", // 短信接收者
             Array(  // 短信模板中字段的值
                 "code" => "123456",
             ),
             "123456789"
         );
+        
+        log_message('info', 'response:'.json_encode($response));
         print_r($response);
     }
 
