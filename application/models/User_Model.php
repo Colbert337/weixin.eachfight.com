@@ -44,5 +44,18 @@ class User_Model extends MY_Model
         return ($num > 0) ? TRUE : FALSE;
     }
 
+    /**
+     * 根据openid获取用户信息
+     * @param string $openid
+     * @return bool
+     */
+    public function getUserByOpenid($openid)
+    {
+        $this->db->select('*')->from(self::TBL)->where("openid", $openid);
+        $query = $this->db->get();
+        $data = $query->row_array();
+        $query->free_result();
+        return $data;
+    }
 
 }
