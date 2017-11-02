@@ -29,7 +29,7 @@ class Comm extends CI_Controller
         log_message('info', 'response:' . json_encode($response));
 
         if (isset($response->Code) && $response->Code == 'OK') {
-            $this->cache->redis->save($key, $code, '600');
+            $this->cache->redis->save($key, $code, 600);
             $this->responseToJson(200, '发送成功');
         } else {
             $this->responseToJson(502, '发送失败');
