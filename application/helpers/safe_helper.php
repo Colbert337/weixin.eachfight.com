@@ -1,5 +1,4 @@
 <?php
-include_once APPPATH.'libraries/aeslib.php';
 define('CHARSET', "UTF-8");
 
 	//过滤非法单引号
