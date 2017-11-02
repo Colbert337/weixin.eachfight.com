@@ -10,6 +10,7 @@ class Comm extends CI_Controller
         $this->load->library('Sms', 'RedisLib');
         $this->load->helper('safe_helper');
         $this->load->driver('cache');
+        $this->load->model('User_Model');
     }
 
     /**
@@ -17,12 +18,12 @@ class Comm extends CI_Controller
      */
     public function sendSms()
     {
-        $mobile = $this->input->post('mobile');
+        $mobile = $this->input->get('mobile');
 //      $ip = $this->input->ip_address();
 
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
         $key = "LAST_SMSCODE_{$mobile}";
-        if($this->cache->redis->get($key)) $this->responseToJson(502, '请稍后重试!');
+        if ($this->cache->redis->get($key)) $this->responseToJson(502, '请稍后重试!');
 
         $code = rand(100000, 999999);
         $response = $this->sms->sendSms("猪游纪", "SMS_107810012", $mobile, ['code' => $code]);
@@ -41,23 +42,25 @@ class Comm extends CI_Controller
      */
     public function bindingMobile()
     {
-        $openid = $this->input->post('openid');
-        $mobile = $this->input->post('mobile');
-        $code = $this->input->post('code');
+        $openid = $this->input->get('openid');
+        $mobile = $this->input->get('mobile');
+        $code = $this->input->get('code');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
         if (strlen($code) != 6) $this->responseToJson(502, '验证码错误');
         //验证码校验
         $key = "LAST_SMSCODE_{$mobile}";
         $redis_code = $this->cache->redis->get($key);
-        if(!$redis_code) $this->responseToJson(502, '验证码已过期');
-        if($redis_code != $code ) $this->responseToJson(502, '验证码错误');
+        if (!$redis_code) $this->responseToJson(502, '验证码已过期');
+        if ($redis_code != $code) $this->responseToJson(502, '验证码错误');
         //用户绑定手机号判定
         $User_Model = new User_Model();
-        $user_data =  $User_Model->getUserByOpenid($openid);
-        if(isset($user_data['mobile']) && $user_data['mobile']) $this->responseToJson(502, '该用户已经绑定手机号');
-        if($User_Model->update(['openid'=>$openid],['mobile'=>$mobile])){
+        $user_data = $User_Model->getUserByOpenid($openid);
+        if (!$user_data) $this->responseToJson(502, '该用户还没注册');
+        if (isset($user_data['mobile']) && $user_data['mobile']) $this->responseToJson(502, '该用户已经绑定手机号');
+        //绑定手机号
+        if ($User_Model->update(['openid' => $openid], ['mobile' => $mobile])) {
             $this->responseToJson(200, '绑定成功');
-        }else{
+        } else {
             $this->responseToJson(502, '绑定失败');
         }
     }
