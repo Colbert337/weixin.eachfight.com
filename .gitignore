@@ -1,9 +1,9 @@
 .DS_Store
 
-application/cache/*
+#application/cache/*
 !application/cache/index.html
 
-application/logs/*
+#application/logs/*
 !application/logs/index.html
 
 !application/*/.htaccess
@@ -30,4 +30,4 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 /tests/tests/
 /tests/results/
 
-application/config/wechat.php
+#application/config/wechat.php
