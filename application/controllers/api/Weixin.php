@@ -5,7 +5,6 @@ use EasyWeChat\Foundation\Application;
 
 class Weixin extends CI_Controller
 {
-    private $wechat_key = 'wechat_user';
 
     public function __construct()
     {

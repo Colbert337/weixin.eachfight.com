@@ -58,6 +58,7 @@ class CI_Controller
      * @var    object
      */
     private static $instance;
+    public $wechat_key = 'wechat_user';
 
     /**
      * Class constructor

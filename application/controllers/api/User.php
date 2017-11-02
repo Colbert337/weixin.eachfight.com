@@ -12,7 +12,7 @@ class User extends CI_Controller
 
     public function index()
     {
-
+        dump($this->session->userdata($this->wechat_key));
     }
 
     /**
