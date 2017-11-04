@@ -9,12 +9,13 @@ class User extends CI_Controller
         $this->load->model('GameLevel_Model');
         $this->load->library('Sms');
 
-        $this->openid = $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']??'';
+        $this->openid = $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] ?? '';
     }
 
     public function index()
     {
-
+        dump($this->session->userdata($this->wechat_key));
+        exit;
     }
 
     /**
@@ -22,7 +23,7 @@ class User extends CI_Controller
      */
     public function getGameLevel()
     {
-        log_message('info','获取到的openid'.$this->openid);
+        log_message('info', '获取到的openid' . $this->openid);
 
         $GameLevel_Model = new GameLevel_Model();
         $data = $GameLevel_Model->getGameLevel(1);
