@@ -19,8 +19,7 @@ class Weixin extends CI_Controller
     //微信用户进行公众号授权
     public function oauth()
     {
-        dump($this->session->has_userdata($this->wechat_key));
-        if (!$this->session->has_userdata($this->wechat_key)) {
+        if (!$this->session->userdata($this->wechat_key)) {
             $user = $this->wechat->oauth->user();
             $data = $user->getOriginal();
 
@@ -64,12 +63,12 @@ class Weixin extends CI_Controller
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
         try {
-            if (!$this->session->has_userdata($this->wechat_key)) {
+            if (!$this->session->userdata($this->wechat_key)) {
                 $user = $this->wechat->oauth->user();
                 $data = $user->getOriginal();
                 
                 log_message('info', '获取到的用户数据100:'.json_encode($data));
-                $this->session->set_userdata([$this->wechat_key => $data['openid']]);
+                $this->session->set_userdata([$this->wechat_key => $data]);
             } else {
                 $data = $this->session->userdata($this->wechat_key);
                 log_message('info', '获取到的用户数据200:'.json_encode($data));
