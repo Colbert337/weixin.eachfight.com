@@ -19,6 +19,10 @@ class Weixin extends CI_Controller
     //微信用户进行公众号授权
     public function oauth()
     {
+        $user = $this->wechat->oauth->user();
+        $data = $user->getOriginal();
+        dump($data);exit;
+
         $callback = urldecode($this->input->get('url')) . '?code=200';
         if (!$this->session->has_userdata($this->wechat_key)) {
             $response = $this->wechat->oauth->with(['state' => urlencode($callback)])->redirect();
