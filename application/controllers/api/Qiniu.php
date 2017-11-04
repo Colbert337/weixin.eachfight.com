@@ -1,14 +1,14 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Qiniu extends CI_Controller {
+class Qiniu extends MY_Controller {
 
     /**
      * 七牛上传token
      * 该方法供前端js上传调用，获取上传所需的token
      * @return json
      */
-    public function qiniuUploadToken() {
+    public function index_get() {
         require APPPATH.'third_party/Qiniu-7.0.7/autoload.php';
 
         // parent::showProfiler(false);
@@ -27,7 +27,12 @@ class Qiniu extends CI_Controller {
         // 生成上传 Token
         $token = $auth->uploadToken($bucket);
 
-        echo json_encode(array('uptoken'=>$token));
+        if(!empty($token)){
+            $this->responseJson(200, '获取成功', ['uptoken'=>$token]);
+        }else{
+            $this->responseJson(502, "获取失败");
+        }
+
     }
 
     /**

@@ -524,3 +524,11 @@ $config['proxy_ips'] = '';
 
 //设置时区
 $config['time_zone'] = date_default_timezone_set('Asia/shanghai');
+
+
+// 七牛图片域名
+$config['photo.domain'] = 'http://assets-cdn.eachfight.com/';//'http://7xtdle.com1.z0.glb.clouddn.com/';
+// 七牛
+$config['qiniu.access_key'] = 'LXIlKPC2_qdNh0VdVnLyX1MhS7AQkMlQSfmynWsc';
+$config['qiniu.secret_key'] = 'OEfiimP-znpjqws-LSBNg6YswEsbG8zCPLLgSS9J';
+$config['qiniu.bucket'] = 'pigge';
