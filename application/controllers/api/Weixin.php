@@ -23,14 +23,15 @@ class Weixin extends CI_Controller
             $user = $this->wechat->oauth->user();
             $data = $user->getOriginal();
 
-            log_message('info', '获取到的用户数据100:'.json_encode($data));
-            $this->session->set_userdata([$this->wechat_key => $data['openid']]);
+            log_message('info', '获取到的用户数据10000:' . json_encode($data));
+            $this->session->set_userdata([$this->wechat_key => $data]);
         } else {
             $data = $this->session->userdata($this->wechat_key);
-            log_message('info', '获取到的用户数据200:'.json_encode($data));
+            log_message('info', '获取到的用户数据20000:' . json_encode($data));
         }
 
-        dump($data,$this->session->userdata($this->wechat_key));exit;
+        dump($data, $this->session->userdata($this->wechat_key));
+        exit;
 
         $callback = urldecode($this->input->get('url')) . '?code=200';
         if (!$this->session->has_userdata($this->wechat_key)) {
@@ -59,19 +60,19 @@ class Weixin extends CI_Controller
     {
         $User_Model = new User_Model();
         $code = $this->input->get('code');
-        log_message('info', '获取到的code:'.$code);
+        log_message('info', '获取到的code:' . $code);
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
         try {
             if (!$this->session->userdata($this->wechat_key)) {
                 $user = $this->wechat->oauth->user();
                 $data = $user->getOriginal();
-                
-                log_message('info', '获取到的用户数据100:'.json_encode($data));
+
+                log_message('info', '获取到的用户数据100:' . json_encode($data));
                 $this->session->set_userdata([$this->wechat_key => $data]);
             } else {
                 $data = $this->session->userdata($this->wechat_key);
-                log_message('info', '获取到的用户数据200:'.json_encode($data));
+                log_message('info', '获取到的用户数据200:' . json_encode($data));
             }
 
             if (!$this->User_Model->CheckRegister($data['openid'])) {  //没有注册过
