@@ -56,7 +56,7 @@ class Weixin extends CI_Controller
                 $data = $user->getOriginal();
                 
                 log_message('info', '获取到的用户数据100:'.json_encode($data));
-                $this->session->set_userdata([$this->wechat_key => $data]);
+                $this->session->set_userdata([$this->wechat_key => $data['openid']]);
             } else {
                 log_message('info', '200');
                 $data = $this->session->userdata($this->wechat_key);
