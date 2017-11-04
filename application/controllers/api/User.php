@@ -21,7 +21,8 @@ class User extends CI_Controller
      */
     public function getGameLevel()
     {
-        dump($_SESSION,$_SERVER);exit;
+        log_message('info','获取到的$_SERVER数据'.json_encode($_SERVER));
+
         $GameLevel_Model = new GameLevel_Model();
         $data = $GameLevel_Model->getGameLevel(1);
         $this->responseToJson(200, '获取成功', $data);
