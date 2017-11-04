@@ -21,7 +21,9 @@ class Weixin extends CI_Controller
     {
         $user = $this->wechat->oauth->user();
         $data = $user->getOriginal();
-        dump($data);exit;
+
+        $this->session->set_userdata(['guochao'=>$data['openid']]);
+        dump($data,$this->session->userdata('guochao'));exit;
 
         $callback = urldecode($this->input->get('url')) . '?code=200';
         if (!$this->session->has_userdata($this->wechat_key)) {

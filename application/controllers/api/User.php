@@ -14,9 +14,7 @@ class User extends CI_Controller
 
     public function index()
     {
-        dump($this->openid);
-        $this->session->set_userdata(['guochao'=>100]);
-        dump($this->session->userdata('guochao'),$this->session->userdata($this->wechat_key));
+
     }
 
     /**
