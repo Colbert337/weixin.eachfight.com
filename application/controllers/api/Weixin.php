@@ -13,6 +13,8 @@ class Weixin extends CI_Controller
         $this->wechat = new Application(config_item("wechat"));
 
         $this->load->helper('cookie');
+        $this->load->helper('emoji_helper');
+
         $this->load->model('User_Model');
     }
 
