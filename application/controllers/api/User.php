@@ -23,7 +23,7 @@ class User extends CI_Controller
      */
     public function getGameLevel()
     {
-        log_message('info', '获取到的openid' . $this->openid);
+        log_message('info', '获取到的openid' . json_encode($_SERVER));
 
         $GameLevel_Model = new GameLevel_Model();
         $data = $GameLevel_Model->getGameLevel(1);
