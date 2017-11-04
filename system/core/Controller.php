@@ -59,6 +59,7 @@ class CI_Controller
      */
     private static $instance;
     public $wechat_key = 'wechat_user';
+    public $openid = '';
 
     /**
      * Class constructor
