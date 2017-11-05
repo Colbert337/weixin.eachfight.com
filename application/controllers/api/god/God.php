@@ -33,6 +33,10 @@ class God extends MY_Controller
                 $godInfo = $this->god->scalarBy(['user_id'=>$userInfo['id'], 'status'=>1]);
                 if(!empty($godInfo)){
                     $data = $godInfo+$userInfo;
+                    $data['game_type'] = god_game_type()[$data['game_type']];
+                    $data['game_level_id'] = gok_game_level()[$data['game_level_id']];
+                    $data['can_zone'] = limit_can_zone()[$data['can_zone']];
+                    $data['can_device'] = limit_can_device()[$data['can_device']];
                     $this->responseJson(200, '数据获取成功', $data);
                 }else{
                     $this->responseJson(502, '该用户不是大神');
