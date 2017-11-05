@@ -64,13 +64,20 @@ class Weixin extends CI_Controller
         $code = $this->input->get('code');
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
+        log_message('info', '获取到的数据101:' . json_encode(get_cookie('token')));
+
         try {
             if (!$this->session->userdata($this->wechat_key)) {
                 $user = $this->wechat->oauth->user();
                 $data = $user->getOriginal();
 
                 $this->session->set_userdata([$this->wechat_key => $data]);
+
+                set_cookie('token', $data['openid'], time() + 7200, '.eachfight.com', '/');
+
                 log_message('info', '获取到的数据100:' . json_encode($this->session->userdata($this->wechat_key)));
+                log_message('info', '获取到的数据101:' . json_encode(get_cookie('token')));
+
 
             } else {
                 $data = $this->session->userdata($this->wechat_key);
