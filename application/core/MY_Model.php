@@ -77,7 +77,37 @@ class MY_Model extends CI_Model {
 
 		return $data;
 	}
+    /**
+     * 获取单条
+     * @access public
+     * @param array $condition 条件数组
+     * @return array - 单条信息
+     */
+    public function scalarBy($condition)
+    {
+        $table = self::TBL;
 
+        if(!$table){
+
+            $model =  get_called_class();
+
+            $table = $model::TBL;
+        }
+
+        $data = array();
+
+        $this->db->select('*')->from($table)->where($condition)->limit(1);
+
+        $query = $this->db->get();
+
+        if($query->num_rows() == 1)
+        {
+            $data = $query->row_array();
+        }
+        $query->free_result();
+
+        return $data;
+    }
     /**
      * 获取多条
      *
