@@ -70,11 +70,11 @@ class Weixin extends CI_Controller
                 $data = $user->getOriginal();
 
                 $this->session->set_userdata([$this->wechat_key => $data]);
-                log_message('info', '获取到的数据100:' . $this->session->userdata($this->wechat_key));
+                log_message('info', '获取到的数据100:' . json_encode($this->session->userdata($this->wechat_key)));
 
             } else {
                 $data = $this->session->userdata($this->wechat_key);
-                log_message('info', '获取到的数据200:' . $this->session->userdata($this->wechat_key));
+                log_message('info', '获取到的数据200:' . json_encode($this->session->userdata($this->wechat_key)));
             }
 
             if (!$this->User_Model->CheckRegister($data['openid'])) {  //没有注册过
