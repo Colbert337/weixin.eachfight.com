@@ -313,7 +313,7 @@ switch (ENVIRONMENT)
  * And away we go...
  */
 header("Access-Control-Allow-Origin:*");//允许的相应的源
-header('Access-Control-Allow-Headers: :*');  //允许的请求头参数
+header('Access-Control-Allow-Headers:*');  //允许的请求头参数
 header("Access-Control-Max-Age:86400");//请求缓存多长时间
 
 require_once BASEPATH.'core/CodeIgniter.php';
