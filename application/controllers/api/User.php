@@ -9,7 +9,8 @@ class User extends CI_Controller
         $this->load->model('GameLevel_Model');
         $this->load->library('Sms');
 
-        $this->openid = $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] ?? '';
+//        $this->openid = $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] ?? '';
+        $this->openid = $this->input->get_request_header('openid', TRUE);
     }
 
     public function index()

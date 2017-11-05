@@ -23,9 +23,10 @@ class God extends MY_Controller
     /**
      * 查询大神所有信息
      */
-    public function index_post()
+    public function index_get()
     {
-        $openid = $this->input->post('openid');
+
+        $openid = $this->input->get_request_header('openid', TRUE);
         if(!empty($openid)){
             // 根据openid获取用户ID
             $userInfo = $this->user->scalarBy(['openid'=>$openid, 'is_god'=>2, 'status'=>1]);

@@ -62,4 +62,4 @@ $route['api/GodApply']['get'] = 'api/god/GodApply/index_get';//获取多条大�
 $route['api/GodApply']['post'] = 'api/god/GodApply/index_post';//提交大神申请信息
 
 $route['api/QiniuToken']['get'] = 'api/Qiniu/index_get';//获取七牛token
-$route['api/GodInfo']['post'] = 'api/god/God/index_post';//获取大神信息
+$route['api/GodInfo']['get'] = 'api/god/God/index_get';//获取大神信息
