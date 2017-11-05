@@ -8,14 +8,12 @@ class User extends CI_Controller
         parent::__construct();
         $this->load->model('GameLevel_Model');
         $this->load->library('Sms');
-
-//        $this->openid = $_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'] ?? '';
         $this->openid = $this->input->get_request_header('openid', TRUE);
     }
 
     public function index()
     {
-        dump($this->session->all_userdata());
+        dump($this->openid);
         exit;
     }
 
@@ -24,7 +22,7 @@ class User extends CI_Controller
      */
     public function getGameLevel()
     {
-        log_message('info', '获取到的openid' . json_encode($this->input->request_headers()));
+        log_message('info', '获取到的openid' . $this->openid);
 
         $GameLevel_Model = new GameLevel_Model();
         $data = $GameLevel_Model->getGameLevel(1);
