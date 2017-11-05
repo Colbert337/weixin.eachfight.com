@@ -24,17 +24,6 @@ class Weixin extends CI_Controller
         dump($_COOKIE);
         exit;
 
-        if (!$this->session->userdata($this->wechat_key)) {
-            $user = $this->wechat->oauth->user();
-            $data = $user->getOriginal();
-
-            log_message('info', '获取到的用户数据10000:' . json_encode($data));
-            $this->session->set_userdata([$this->wechat_key => $data]);
-        } else {
-            $data = $this->session->userdata($this->wechat_key);
-            log_message('info', '获取到的用户数据20000:' . json_encode($data));
-        }
-
         $callback = urldecode($this->input->get('url')) . '?code=200';
         if (!$this->session->has_userdata($this->wechat_key)) {
             $response = $this->wechat->oauth->with(['state' => urlencode($callback)])->redirect();
@@ -47,6 +36,9 @@ class Weixin extends CI_Controller
     //回调地址，获取用户基本信息  第一次注册入库
     public function oauthBack()
     {
+        set_cookie($this->wechat_key, '100000000', 7200, '.eachfight.com', '/');
+        exit;
+
         $user = $this->wechat->oauth->user();
         $userArr = $user->toArray();
         $this->session->set_userdata([$this->wechat_key => $userArr['id']]);
@@ -65,7 +57,7 @@ class Weixin extends CI_Controller
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
         try {
-            if (!get_cookie($this->wechat_key)) {
+            if (empty(get_cookie($this->wechat_key))) {
                 $user = $this->wechat->oauth->user();
                 $data = $user->getOriginal();
 
