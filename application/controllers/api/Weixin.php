@@ -21,6 +21,9 @@ class Weixin extends CI_Controller
     //微信用户进行公众号授权
     public function oauth()
     {
+        dump($_COOKIE);
+        exit;
+
         if (!$this->session->userdata($this->wechat_key)) {
             $user = $this->wechat->oauth->user();
             $data = $user->getOriginal();
@@ -31,9 +34,6 @@ class Weixin extends CI_Controller
             $data = $this->session->userdata($this->wechat_key);
             log_message('info', '获取到的用户数据20000:' . json_encode($data));
         }
-
-        dump($data, $this->session->userdata($this->wechat_key));
-        exit;
 
         $callback = urldecode($this->input->get('url')) . '?code=200';
         if (!$this->session->has_userdata($this->wechat_key)) {
@@ -64,24 +64,17 @@ class Weixin extends CI_Controller
         $code = $this->input->get('code');
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
-        log_message('info', '获取到的数据101:' . get_cookie('token'));
-
         try {
-            if (!$this->session->userdata($this->wechat_key)) {
+            if (!get_cookie($this->wechat_key)) {
                 $user = $this->wechat->oauth->user();
                 $data = $user->getOriginal();
 
-                $this->session->set_userdata([$this->wechat_key => $data]);
-
-                set_cookie('token', $data['openid'], time() + 7200, '.eachfight.com', '/');
-
-                log_message('info', '获取到的数据100:' . json_encode($this->session->userdata($this->wechat_key)));
-                log_message('info', '获取到的数据101:' . get_cookie('token'));
-
+                set_cookie($this->wechat_key, $data['openid'], 7200, '.eachfight.com', '/');
+                log_message('info', '获取到的数据100:' . get_cookie($this->wechat_key));
 
             } else {
-                $data = $this->session->userdata($this->wechat_key);
-                log_message('info', '获取到的数据200:' . json_encode($this->session->userdata($this->wechat_key)));
+                $data = $_COOKIE;
+                log_message('info', '获取到的数据200:' . get_cookie($this->wechat_key));
             }
 
             if (!$this->User_Model->CheckRegister($data['openid'])) {  //没有注册过
@@ -94,7 +87,7 @@ class Weixin extends CI_Controller
                 ]);
             }
 
-            $this->responseToJson(200, '登陆成功', $data);
+            $this->responseToJson(200, '登陆成功', $data['openid']);
         } catch (Exception $e) {
             $this->responseToJson(502, $e->getMessage());
         }
