@@ -32,12 +32,12 @@ class User_Model extends MY_Model
 
     /**
      * 根据openid判断用户是否注册过
-     * @param string $openid
+     * @param string $token
      * @return bool
      */
-    public function CheckRegister($openid)
+    public function CheckRegister($token)
     {
-        $this->db->select('id')->from(self::TBL)->where("openid", $openid);
+        $this->db->select('id')->from(self::TBL)->where("token", $token);
         $query = $this->db->get();
         $num = $query->num_rows();
         $query->free_result();

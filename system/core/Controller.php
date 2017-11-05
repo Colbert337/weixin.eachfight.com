@@ -59,7 +59,7 @@ class CI_Controller
      */
     private static $instance;
     public $wechat_key = 'wechat_user';
-    public $openid = '';
+    public $token = '';
 
     /**
      * Class constructor
@@ -109,6 +109,13 @@ class CI_Controller
 
         echo json_encode(['status' => $status, 'msg' => $msg, 'data' => $data]);
         exit;
+    }
+
+    /**
+     * token验证
+     */
+    public function checkToken(){
+        $this->token = $this->input->get_post('token', TRUE);
     }
 
 }
