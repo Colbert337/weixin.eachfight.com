@@ -16,8 +16,6 @@ class Weixin extends CI_Controller
 
         $this->load->helper('cookie');
         $this->load->helper('emoji_helper');
-
-        $this->load->model('User_Model');
     }
 
     //微信用户进行公众号授权

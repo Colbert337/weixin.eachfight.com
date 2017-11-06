@@ -9,7 +9,6 @@ class Comm extends CI_Controller
         parent::__construct();
         $this->load->library('Sms');
         $this->load->helper('safe_helper');
-        $this->load->driver('cache');
         $this->load->model('User_Model');
     }
 

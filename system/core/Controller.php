@@ -112,12 +112,18 @@ class CI_Controller
     /**
      * 根据token获取用户id并验证
      */
-    protected function getUseridByToken()
+    protected function getUserId()
     {
         $token = $this->input->get_post('token', TRUE);
         if (!$token) $this->responseToJson(502, 'token参数缺少');
 
+        $userInfo = $this->User_Model->CheckRegister($token);
+        if (!$userInfo || !isset($userInfo['openid']) || !isset($userInfo['id']))
+            $this->responseToJson(502, '该用户还未注册');
+        if ($this->cache->redis->get($token) != md5($userInfo['openid']))
+            $this->responseToJson(502, '该用户还未注册');
 
+        return $userInfo['id'];
     }
 
 }

@@ -8,13 +8,15 @@ class User extends CI_Controller
         parent::__construct();
         $this->load->model('GameLevel_Model');
         $this->load->library('Sms');
-        $this->openid = $this->input->get_request_header('openid', TRUE);
+//      $this->openid = $this->input->get_request_header('openid', TRUE);
     }
 
     public function index()
     {
-        dump($this->openid);
+        $user_id = $this->getUserId();
+        dump($user_id);
         exit;
+        $user_id = (ENVIRONMENT !== 'development') ? $this->getUserId() : 1;
     }
 
     /**
