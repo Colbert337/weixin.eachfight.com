@@ -64,8 +64,8 @@ class Weixin extends CI_Controller
                 $this->token = md5($data['openid'] . 'eachfight');
                 $this->cache->redis->save($this->token, md5($data['openid']), 7200);
                 //存cookie
-                set_cookie('guochao', $data['openid'], 7200, '.eachfight.com', '/');
-                log_message('info', '获取到的数据100:' . get_cookie('guochao') . '-' . $this->token);
+                set_cookie('guochao', '100000', 7200, '.eachfight.com', '/');
+                log_message('info', '获取到的数据cookie:' . get_cookie('guochao') . '--token--' . $this->token);
                 //注册
                 if (!$this->User_Model->CheckRegister($this->token)) {  //没有注册过
                     $User_Model->insert([

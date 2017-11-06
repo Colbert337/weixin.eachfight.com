@@ -24,8 +24,6 @@ class User extends CI_Controller
      */
     public function getGameLevel()
     {
-        log_message('info', '获取到的headers' . json_encode($this->input->request_headers()));
-
         $GameLevel_Model = new GameLevel_Model();
         $data = $GameLevel_Model->getGameLevel(1);
         $this->responseToJson(200, '获取成功', $data);
