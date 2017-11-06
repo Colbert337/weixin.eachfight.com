@@ -6,6 +6,8 @@ use EasyWeChat\Foundation\Application;
 class Weixin extends CI_Controller
 {
 
+    private $token = '';
+
     public function __construct()
     {
         parent::__construct();
@@ -14,7 +16,6 @@ class Weixin extends CI_Controller
 
         $this->load->helper('cookie');
         $this->load->helper('emoji_helper');
-        $this->load->library('RedisLib');
 
         $this->load->model('User_Model');
     }
@@ -60,8 +61,8 @@ class Weixin extends CI_Controller
                 $user = $this->wechat->oauth->user();
                 $data = $user->getOriginal();
                 //加密
-                $this->token = md5($data['openid'] . 'tokeneachfight');
-                $this->cache->redis->save($this->token, md5($data['openid'] . 'openideachfight'), 7200);
+                $this->token = md5($data['openid'] . 'eachfight');
+                $this->cache->redis->save($this->token, md5($data['openid']), 7200);
                 //存cookie
                 set_cookie($this->wechat_key, $data['openid'], 7200, '.eachfight.com', '/');
                 log_message('info', '获取到的数据100:' . get_cookie($this->wechat_key) . '-' . $this->token);

@@ -7,7 +7,7 @@ class Comm extends CI_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library('Sms', 'RedisLib');
+        $this->load->library('Sms');
         $this->load->helper('safe_helper');
         $this->load->driver('cache');
         $this->load->model('User_Model');
@@ -18,7 +18,7 @@ class Comm extends CI_Controller
      */
     public function sendSms()
     {
-        $mobile = $this->input->post('mobile');
+        $mobile = $this->input->get('mobile');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
         $key = "LAST_SMSCODE_{$mobile}";
         if ($this->cache->redis->get($key)) $this->responseToJson(502, '请稍后重试!');

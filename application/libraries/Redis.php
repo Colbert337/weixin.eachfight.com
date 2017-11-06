@@ -1,6 +1,6 @@
 <?php
 
-class RedisLib
+class Redis
 {
 
     protected $redis;
@@ -9,7 +9,7 @@ class RedisLib
     {
         $this->ci = &get_instance();
 
-        $this->redis = new Redis();
+        $this->redis = new redis();
 
 //        $this->redis->connect('101.132.144.219',6379);
         $this->redis->connect('127.0.0.1', 6379);

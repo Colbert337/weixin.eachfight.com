@@ -58,8 +58,6 @@ class CI_Controller
      * @var    object
      */
     private static $instance;
-    public $wechat_key = 'wechat_user';
-    public $token = '';
 
     /**
      * Class constructor
@@ -112,10 +110,14 @@ class CI_Controller
     }
 
     /**
-     * token验证
+     * 根据token获取用户id并验证
      */
-    public function checkToken(){
-        $this->token = $this->input->get_post('token', TRUE);
+    protected function getUseridByToken()
+    {
+        $token = $this->input->get_post('token', TRUE);
+        if (!$token) $this->responseToJson(502, 'token参数缺少');
+
+
     }
 
 }
