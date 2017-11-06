@@ -21,7 +21,7 @@ class Weixin extends CI_Controller
     //微信用户进行公众号授权
     public function oauth()
     {
-        dump($this->cache->redis->get($this->token),get_cookie($this->token));
+        dump($this->cache->redis->get($this->token), get_cookie('guochao'));
         exit;
 
         $callback = urldecode($this->input->get('url')) . '?code=200';
@@ -52,6 +52,8 @@ class Weixin extends CI_Controller
         $User_Model = new User_Model();
         $code = $this->input->get('code');
         $this->token = $this->input->get('token');
+        log_message('info', '获取到的数据token:' . $this->token);
+
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 
         try {
@@ -62,8 +64,8 @@ class Weixin extends CI_Controller
                 $this->token = md5($data['openid'] . 'eachfight');
                 $this->cache->redis->save($this->token, md5($data['openid']), 7200);
                 //存cookie
-                set_cookie($this->token, $data['openid'], 7200, '.eachfight.com', '/');
-                log_message('info', '获取到的数据100:' . get_cookie($this->token) . '-' . $this->token);
+                set_cookie('guochao', $data['openid'], 7200, '.eachfight.com', '/');
+                log_message('info', '获取到的数据100:' . get_cookie('guochao') . '-' . $this->token);
                 //注册
                 if (!$this->User_Model->CheckRegister($this->token)) {  //没有注册过
                     $User_Model->insert([
@@ -76,7 +78,7 @@ class Weixin extends CI_Controller
                     ]);
                 }
             }
-            $this->responseToJson(200, '登陆成功', $this->token);
+            $this->responseToJson(200, '登陆成功', ['token' => $this->token]);
         } catch (Exception $e) {
             $this->responseToJson(502, $e->getMessage());
         }
