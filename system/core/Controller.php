@@ -120,9 +120,9 @@ class CI_Controller
 
         $userInfo = $this->User_Model->CheckRegister($token);
         if (!$userInfo || !isset($userInfo['openid']) || !isset($userInfo['id']))
-            $this->responseToJson(502, '该用户还未注册');
+            $this->responseToJson(502, '该用户还未注册11');
         if ($this->cache->redis->get($token) != md5($userInfo['openid']))
-            $this->responseToJson(502, '该用户还未注册');
+            $this->responseToJson(502, '该用户还未注册22');
 
         return $userInfo['id'];
     }

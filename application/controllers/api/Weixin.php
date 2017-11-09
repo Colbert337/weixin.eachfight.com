@@ -21,7 +21,7 @@ class Weixin extends CI_Controller
     //微信用户进行公众号授权
     public function oauth()
     {
-        dump($this->cache->redis->get($this->token), get_cookie('guochao'));
+        dump($this->cache->redis->get('5c57852d86f82a29e548b2cfdbe1e4a9'), get_cookie('guochao'));
         exit;
 
         $callback = urldecode($this->input->get('url')) . '?code=200';
