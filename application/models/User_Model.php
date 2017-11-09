@@ -31,17 +31,17 @@ class User_Model extends MY_Model
     }
 
     /**
-     * 根据openid判断用户是否注册过
+     * 根据token判断用户是否注册过
      * @param string $token
      * @return bool
      */
     public function CheckRegister($token)
     {
-        $this->db->select('id','openid')->from(self::TBL)->where("token", $token);
+        $this->db->select('id', 'openid')->from(self::TBL)->where("token", $token);
         $query = $this->db->get();
-        $num = $query->num_rows();
+        $data = $query->row_array();
         $query->free_result();
-        return ($num > 0) ? TRUE : FALSE;
+        return $data;
     }
 
     /**
