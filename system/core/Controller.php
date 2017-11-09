@@ -114,8 +114,8 @@ class CI_Controller
      */
     protected function getUserId()
     {
-        $token = $this->input->get_post('token', TRUE);
-        log_message('info', 'getUserId获取到的数据token:' . $this->token);
+        $token = $this->input->get_post('token');
+        log_message('info', 'getUserId获取到的数据token:' . $token);
         if (!$token) $this->responseToJson(502, 'token参数缺少');
 
         $userInfo = $this->User_Model->CheckRegister($token);

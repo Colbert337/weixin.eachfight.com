@@ -47,7 +47,7 @@ class User_Model extends MY_Model
     /**
      * 根据id获取用户信息
      * @param int $id
-     * @return bool
+     * @return mixed
      */
     public function getUserById(int $id)
     {
