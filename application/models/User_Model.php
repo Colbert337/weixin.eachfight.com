@@ -37,7 +37,7 @@ class User_Model extends MY_Model
      */
     public function CheckRegister($token)
     {
-        $this->db->select('id', 'openid')->from(self::TBL)->where("token", $token);
+        $this->db->select(['id', 'openid'])->from(self::TBL)->where("token", $token);
         $query = $this->db->get();
         $data = $query->row_array();
         $query->free_result();
