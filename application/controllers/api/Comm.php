@@ -17,6 +17,7 @@ class Comm extends CI_Controller
      */
     public function sendSms()
     {
+        $this->getUserId();
         $mobile = $this->input->post('mobile');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
         $key = "LAST_SMSCODE_{$mobile}";
@@ -39,7 +40,7 @@ class Comm extends CI_Controller
      */
     public function bindingMobile()
     {
-        $openid = $this->input->post('openid');
+        $user_id = $this->getUserId();
         $mobile = $this->input->post('mobile');
         $code = $this->input->post('code');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
@@ -51,11 +52,11 @@ class Comm extends CI_Controller
         if ($redis_code != $code) $this->responseToJson(502, '验证码错误');
         //用户绑定手机号判定
         $User_Model = new User_Model();
-        $user_data = $User_Model->getUserByOpenid($openid);
+        $user_data = $User_Model->getUserById($user_id);
         if (!$user_data) $this->responseToJson(502, '该用户还没注册');
         if (isset($user_data['mobile']) && $user_data['mobile']) $this->responseToJson(502, '该用户已经绑定手机号');
         //绑定手机号
-        if ($User_Model->update(['openid' => $openid], ['mobile' => $mobile,'update_time'=>date('Y-m-d H:i:s')])) {
+        if ($User_Model->update(['id' => $user_id], ['mobile' => $mobile,'update_time'=>date('Y-m-d H:i:s')])) {
             $this->responseToJson(200, '绑定成功');
         } else {
             $this->responseToJson(502, '绑定失败');

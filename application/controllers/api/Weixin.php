@@ -52,7 +52,7 @@ class Weixin extends CI_Controller
         $User_Model = new User_Model();
         $code = $this->input->get('code',true);
         $this->token = $this->input->get('token',true);
-        log_message('info', '获取到的数据token:' . $this->token);
+        log_message('info', 'weboauth获取到的数据token:' . $this->token);
 
         if (empty($code)) $this->responseToJson(502, 'code参数缺少');
 

@@ -45,13 +45,13 @@ class User_Model extends MY_Model
     }
 
     /**
-     * 根据openid获取用户信息
-     * @param string $openid
+     * 根据id获取用户信息
+     * @param int $id
      * @return bool
      */
-    public function getUserByOpenid($openid)
+    public function getUserById(int $id)
     {
-        $this->db->select('*')->from(self::TBL)->where("openid", $openid);
+        $this->db->select('*')->from(self::TBL)->where("id", $id);
         $query = $this->db->get();
         $data = $query->row_array();
         $query->free_result();
