@@ -17,7 +17,7 @@ class Comm extends CI_Controller
      */
     public function sendSms()
     {
-        $mobile = $this->input->get('mobile');
+        $mobile = $this->input->post('mobile');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
         $key = "LAST_SMSCODE_{$mobile}";
         if ($this->cache->redis->get($key)) $this->responseToJson(502, '请稍后重试!');
