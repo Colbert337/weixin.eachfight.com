@@ -4,7 +4,7 @@ $this->load->view('admin/template/header');
 
 <header class="navbar-wrapper">
     <div class="navbar navbar-fixed-top">
-        <div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="{:U('Index/index')}">帮吧后台管理.111</a> <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
+        <div class="container-fluid cl"> <a class="logo navbar-logo f-l mr-10 hidden-xs" href="{:U('Index/index')}">猪游纪管理后台.刘万波</a> <a aria-hidden="false" class="nav-toggle Hui-iconfont visible-xs" href="javascript:;">&#xe667;</a>
             <nav id="Hui-userbar" class="nav navbar-nav navbar-userbar hidden-xs">
                 <ul class="cl">
                     <li class="dropDown dropDown_hover"> <a href="#" class="dropDown_A">111 <i class="Hui-iconfont">&#xe6d5;</i></a>

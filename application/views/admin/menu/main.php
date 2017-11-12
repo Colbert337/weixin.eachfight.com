@@ -6,7 +6,7 @@ $this->load->view('admin/template/header');
 <body>
 <nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
-	<p class="f-20 text-success">欢迎登录帮吧后台</p>
+	<p class="f-20 text-success">欢迎登录猪游纪管理后台</p>
 	<span><iframe name="weather_inc" src="http://i.tianqi.com/index.php?c=code&id=1" width="330" height="35" frameborder="0" marginwidth="0" marginheight="0" scrolling="no"></iframe></span>
 	<table class="table table-border table-bordered table-bg mt-20">
 		<thead>
