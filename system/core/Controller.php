@@ -58,6 +58,7 @@ class CI_Controller
      * @var    object
      */
     private static $instance;
+    protected $user_id;
 
     /**
      * Class constructor
@@ -99,7 +100,7 @@ class CI_Controller
      * @param $msg
      * @param array $data
      */
-    public function responseToJson(int $status, string $msg, $data = [])
+    protected function responseToJson(int $status, string $msg, $data = [])
     {
         if (!in_array($status, [200, 502])) {
             $this->response(['status' => 402, 'msg' => "返回状态码不正确，请联系开发者！"]);
@@ -114,7 +115,7 @@ class CI_Controller
      */
     protected function getUserId()
     {
-        $token = $this->input->get_post('token');
+        $token = $this->input->get_post('token', true);
         log_message('info', 'getUserId获取到的数据token:' . $token);
         if (!$token) $this->responseToJson(502, 'token参数缺少');
 

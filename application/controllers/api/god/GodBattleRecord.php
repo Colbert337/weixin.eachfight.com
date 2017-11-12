@@ -10,8 +10,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 class GodBattleRecord extends MY_Controller
 {
 
-    private $wechat = 'wechat_user';
-
     function __construct()
     {
         // Construct the parent class

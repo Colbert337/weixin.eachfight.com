@@ -8,14 +8,13 @@ class User extends CI_Controller
         parent::__construct();
         $this->load->model('GameLevel_Model');
         $this->load->library('Sms');
+        //获取用户uid
+        $this->user_id = $this->getUserId();
     }
 
     public function index()
     {
-        $user_id = $this->getUserId();
-        dump($user_id);
-        exit;
-        $user_id = (ENVIRONMENT !== 'development') ? $this->getUserId() : 1;
+
     }
 
     /**
@@ -23,8 +22,7 @@ class User extends CI_Controller
      */
     public function getGameLevel()
     {
-        $user_id = $this->getUserId();
-
+        dump($this->user_id);
         $GameLevel_Model = new GameLevel_Model();
         $data = $GameLevel_Model->getGameLevel(1);
         $this->responseToJson(200, '获取成功', $data);

@@ -10,6 +10,8 @@ class Comm extends CI_Controller
         $this->load->library('Sms');
         $this->load->helper('safe_helper');
         $this->load->model('User_Model');
+        //获取用户uid
+        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -17,11 +19,10 @@ class Comm extends CI_Controller
      */
     public function sendSms()
     {
-        $this->getUserId();
         $mobile = $this->input->post('mobile');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
         $key = "LAST_SMSCODE_{$mobile}";
-        if ($this->cache->redis->get($key)) $this->responseToJson(502, '请稍后重试!');
+        if ($this->cache->redis->get($key)) $this->responseToJson(502, '你已发送验证码，请勿频繁操作，该验证码十分钟内有效!');
 
         $code = rand(100000, 999999);
         $response = $this->sms->sendSms("猪游纪", "SMS_107810012", $mobile, ['code' => $code]);
@@ -40,7 +41,7 @@ class Comm extends CI_Controller
      */
     public function bindingMobile()
     {
-        $user_id = $this->getUserId();
+        $user_id = $this->user_id;
         $mobile = $this->input->post('mobile');
         $code = $this->input->post('code');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
@@ -56,7 +57,7 @@ class Comm extends CI_Controller
         if (!$user_data) $this->responseToJson(502, '该用户还没注册');
         if (isset($user_data['mobile']) && $user_data['mobile']) $this->responseToJson(502, '该用户已经绑定手机号');
         //绑定手机号
-        if ($User_Model->update(['id' => $user_id], ['mobile' => $mobile,'update_time'=>date('Y-m-d H:i:s')])) {
+        if ($User_Model->update(['id' => $user_id], ['mobile' => $mobile, 'update_time' => date('Y-m-d H:i:s')])) {
             $this->responseToJson(200, '绑定成功');
         } else {
             $this->responseToJson(502, '绑定失败');
