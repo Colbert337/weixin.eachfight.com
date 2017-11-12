@@ -65,7 +65,7 @@ class Weixin extends CI_Controller
                 $this->cache->redis->save($this->token, md5($data['openid']), 7200);
                 //存cookie
                 set_cookie('guochao', '100000', 7200, '.eachfight.com', '/');
-                log_message('info', '获取到的数据cookie:' . get_cookie('guochao') . '--token--' . $this->token);
+                log_message('info', '获取到的数据cookie1:' . get_cookie('guochao') . '--token--' . $this->token);
                 //注册
                 if (!$this->User_Model->CheckRegister($this->token)) {  //没有注册过
                     $User_Model->insert([
@@ -77,6 +77,10 @@ class Weixin extends CI_Controller
                         'create_time' => date('Y-m-d H:i:s')
                     ]);
                 }
+            }{
+                //存cookie
+                set_cookie('guochao', '100000', 7200, '.eachfight.com', '/');
+                log_message('info', '获取到的数据cookie2:' . get_cookie('guochao') . '--token--' . $this->token);
             }
             $this->responseToJson(200, '登陆成功', ['token' => $this->token]);
         } catch (Exception $e) {
