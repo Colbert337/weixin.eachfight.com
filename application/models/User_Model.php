@@ -41,7 +41,22 @@ class User_Model extends MY_Model
         $query = $this->db->get();
         $data = $query->row_array();
         $query->free_result();
+
         return $data;
+    }
+
+    /**
+     * 根据id判断用户是否绑定过手机
+     * @param int $id
+     * @return int
+     */
+    public function CheckBindMobile(int $id)
+    {
+        $this->db->select(['mobile'])->from(self::TBL)->where("id", $id);
+        $query = $this->db->get();
+        $row = $query->row();
+
+        return $row->mobile ? 1 : 0;
     }
 
     /**

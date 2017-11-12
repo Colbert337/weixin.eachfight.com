@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+<?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /**
  * GodApply Model Class
@@ -7,13 +7,14 @@
  * @category    Models
  * @author      fengchen <fengchenorz@gmail.com>
  */
-class Order_Model extends MY_Model {
+class Order_Model extends MY_Model
+{
 
     const TBL = 'order';
-    
+
     /**
      * 主键：{"id"}
-     * 
+     *
      * @access private
      */
     private $_unique_key = array('id');
@@ -30,6 +31,20 @@ class Order_Model extends MY_Model {
 
     }
 
+    /**
+     * 根据用户id获取用户当前的订单
+     * @param int $user_id
+     * @return mixed
+     */
+    public function getUserOrder(int $user_id)
+    {
+        return $this->db->select('*')
+            ->from(self::TBL)
+            ->where("user_id", $user_id)
+            ->order_by('create_time', 'desc')
+            ->get()
+            ->row();
+    }
 
 
 }

@@ -9,7 +9,6 @@ class Comm extends CI_Controller
         parent::__construct();
         $this->load->library('Sms');
         $this->load->helper('safe_helper');
-        $this->load->model('User_Model');
         //获取用户uid
         $this->user_id = $this->getUserId();
     }
