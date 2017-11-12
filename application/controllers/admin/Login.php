@@ -21,6 +21,5 @@ class Login extends CI_Controller {
 	public function index()
 	{
 		redirect('admin/Index');
-		$this->load->view('welcome_message');
 	}
 }
