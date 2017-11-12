@@ -25,7 +25,7 @@ class Comm extends CI_Controller
         if ($this->cache->redis->get($key)) $this->responseToJson(502, '你已发送验证码，请勿频繁操作，该验证码十分钟内有效!');
 
         $code = rand(100000, 999999);
-        $response = $this->sms->sendSms("猪游纪", "SMS_107810012", $mobile, ['code' => $code]);
+        $response = $this->sms->sendSms("猪游纪", "SMS_109490433", $mobile, ['code' => $code]);
         log_message('info', 'response:' . json_encode($response));
 
         if (isset($response->Code) && $response->Code == 'OK') {
