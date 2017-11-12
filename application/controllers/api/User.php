@@ -23,6 +23,8 @@ class User extends CI_Controller
      */
     public function getGameLevel()
     {
+        $user_id = $this->getUserId();
+
         $GameLevel_Model = new GameLevel_Model();
         $data = $GameLevel_Model->getGameLevel(1);
         $this->responseToJson(200, '获取成功', $data);
