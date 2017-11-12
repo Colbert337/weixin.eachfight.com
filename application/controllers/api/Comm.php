@@ -44,6 +44,7 @@ class Comm extends CI_Controller
         $user_id = $this->user_id;
         $mobile = $this->input->post('mobile');
         $code = $this->input->post('code');
+        if (!$mobile) $this->responseToJson(502, 'mobile参数缺少');
         if (!isMobile($mobile)) $this->responseToJson(502, '手机格式错误');
         if (strlen($code) != 6) $this->responseToJson(502, '验证码错误');
         //验证码校验
