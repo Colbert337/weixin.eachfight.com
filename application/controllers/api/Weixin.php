@@ -37,6 +37,8 @@ class Weixin extends CI_Controller
     public function oauthBack()
     {
         $user = $this->wechat->oauth->user();
+        dump($user->get('o05NB0w96SrxDgpS6ZzOapUNq1WY'), $user->toArray());
+
         $userArr = $user->toArray();
         $this->session->set_userdata([$this->wechat_key => $userArr['id']]);
         set_cookie('token', $userArr['id'], time() + 7200, '.eachfight.com', '/');
@@ -77,7 +79,8 @@ class Weixin extends CI_Controller
                         'create_time' => date('Y-m-d H:i:s')
                     ]);
                 }
-            }{
+            }
+            {
                 //存cookie
                 set_cookie('guochao', '100000', 7200, '.eachfight.com', '/');
                 log_message('info', '获取到的数据cookie2:' . get_cookie('guochao') . '--token--' . $this->token);

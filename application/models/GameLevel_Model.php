@@ -45,4 +45,17 @@ class GameLevel_Model extends MY_Model
         return $data;
     }
 
+    /**
+     * 根据id获取段位名称
+     */
+    public function getGameLevelName(int $id)
+    {
+        return $this->db->select(['game_level'])
+            ->from(self::TBL)
+            ->where("id", $id)
+            ->order_by('create_time', 'desc')
+            ->get()
+            ->row();
+    }
+
 }

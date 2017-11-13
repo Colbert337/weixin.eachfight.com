@@ -8,7 +8,8 @@ class User extends CI_Controller
         parent::__construct();
         $this->load->model('GameLevel_Model');
         $this->load->model('Order_Model');
-        $this->load->library('Sms');
+        $this->load->model('God_Model');
+        $this->load->model('OrderRecord_Model');
         //获取用户uid
         $this->user_id = $this->getUserId();
     }
@@ -25,17 +26,21 @@ class User extends CI_Controller
             $user_order = $this->Order_Model->getUserOrder($this->user_id);
             $play_status = $this->getUserPlayStatus($user_order->status ?? '');
             $order_id = $user_order->id ?? '';
+            $god_info = !$user_order->god_user_id ? [] : $this->getGodInfo($user_order->god_user_id, $user_order->game_type);
+
+            $order_record = [];
+            if ($user_order->id) {
+                $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $user_order->id]);
+                $order_record = $OrderRecord_Model['victory_num'] ? $OrderRecord_Model['victory_num'] : [];
+            }
+
             $data = ['play_status' => $play_status, 'order_id' => $order_id, 'mobile_bind' => $mobile_bind,
-                'order_info' => [], 'god_info' => []];
+                'victory_num' => $order_record, 'god_info' => $god_info];
 
             $this->responseToJson(200, '获取成功', $data);
         } catch (\Exception $exception) {
             $this->responseToJson(200, $exception->getMessage());
         }
-
-
-        dump($play_status);
-
     }
 
     /**
@@ -81,5 +86,19 @@ class User extends CI_Controller
         }
 
         return $play_status;
+    }
+
+    //根据用户id及游戏类型获取大神的信息
+    private function getGodInfo($user_id, $game_type)
+    {
+        $god_info = $this->God_Model->getGodInfo($user_id, $game_type);
+        $user_info = $this->User_Model->getUserById($user_id);
+        $data = $god_info + $user_info;
+        $result = ['headimg_url' => $data['headimg_url'], 'nickname' => $data['nickname'], 'gender' => $data['gender'],
+            'mobile' => $data['mobile'], 'order_num' => $data['order_num'], 'comment_score' => $data['comment_score'],
+            'game_level' => $god_info['game_level_id'] ? $this->GameLevel_Model->getGameLevelName($god_info['game_level_id']) : '',
+            'weixin_url' => $data['weixin_url'], 'available_balance' => $data['available_balance']];
+
+        return $result;
     }
 }
