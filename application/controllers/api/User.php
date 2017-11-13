@@ -28,14 +28,14 @@ class User extends CI_Controller
             $order_id = $user_order->id ?? '';
             $god_info = !$user_order->god_user_id ? [] : $this->getGodInfo($user_order->god_user_id, $user_order->game_type);
 
-            $order_record = [];
+            $victory_num = [];
             if ($user_order->id) {
                 $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $user_order->id]);
-                $order_record = $OrderRecord_Model['victory_num'] ? $OrderRecord_Model['victory_num'] : [];
+                $victory_num = $OrderRecord_Model['victory_num'] ? $OrderRecord_Model['victory_num'] : [];
             }
 
             $data = ['play_status' => $play_status, 'order_id' => $order_id, 'mobile_bind' => $mobile_bind,
-                'victory_num' => $order_record, 'god_info' => $god_info];
+                'victory_num' => $victory_num, 'god_info' => $god_info];
 
             $this->responseToJson(200, '获取成功', $data);
         } catch (\Exception $exception) {
