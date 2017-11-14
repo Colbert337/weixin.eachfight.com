@@ -67,11 +67,11 @@ if (!function_exists('game_mode')) {
     }
 }
 
-//是否选中不计胜负
+//是否计胜负
 if (!function_exists('is_except')) {
     function is_except()
     {
-        return array(1 => '没选中', 2 => '选中');
+        return array(1 => '计', 2 => '不计');
     }
 }
 

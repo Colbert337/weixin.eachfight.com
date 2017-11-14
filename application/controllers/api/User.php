@@ -13,7 +13,7 @@ class User extends CI_Controller
 
         $this->load->library('form_validation');
         //获取用户uid
-//        $this->user_id = $this->getUserId();
+        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -24,14 +24,16 @@ class User extends CI_Controller
         try {
             //手机绑定状态
             $mobile_bind = $this->User_Model->CheckBindMobile($this->user_id);
-            //获取当前订单
+            //获取当前最新订单
             $user_order = $this->Order_Model->getUserOrder($this->user_id);
             $play_status = $this->getUserPlayStatus($user_order->status ?? '');
+
             $order_id = $user_order->id ?? '';
-            $god_info = !$user_order->god_user_id ? [] : $this->getGodInfo($user_order->god_user_id, $user_order->game_type);
+            $god_info = ($order_id && $user_order->god_user_id) ?
+                $this->getGodInfo($user_order->god_user_id, $user_order->game_type) : [];
 
             $victory_num = [];
-            if ($user_order->id) {
+            if ($order_id) {
                 $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $user_order->id]);
                 $victory_num = $OrderRecord_Model['victory_num'] ? $OrderRecord_Model['victory_num'] : [];
             }
@@ -59,77 +61,60 @@ class User extends CI_Controller
     /**
      * 用户下单
      */
-    public function userCreateOrder()
+    public function createOrder()
     {
-        $config = array(
-            array(
-                'field' => 'car_no',
-                'label' => '车牌号码',
-                'rules' => 'trim|required|min_length[5]',
-            ),
-            array(
-                'field' => 'frame_no',
-                'label' => '车架号码',
-                'rules' => 'trim|required|exact_length[6]',
-            ),
-            array(
-                'field' => 'engine_no',
-                'label' => '发动机号码',
-                'rules' => 'trim|required|exact_length[6]',
-                'errors' => array(
-                    'required' => '这里可以输出你想显示的required错误信息',
-                    'exact_length' => '这里可以输出你想显示exact_length的错误信息',
-                ),
-            ),
-        );
-        // 以下是测试信息，生产环境注释掉
-        $data = ['car_no' => 'yueudshfjdjs', 'frame_no' => '1037547965@qq.com', 'engine_no' => '13011111234'];
-        // 以下为表单验证
-        $this->form_validation->set_data($data);
-        $this->form_validation->set_rules($config);
+        $params = $this->input->post();
+        //参数校验
+        $this->form_validation->set_data($params);
+        if ($this->form_validation->run('create_order') == false) {
+            $errors = array_values($this->form_validation->error_array());
+            $this->responseToJson(502, array_shift($errors));
+        }
+        //排除游戏中
+        $user_order = $this->Order_Model->getUserOrder($this->user_id);
+        $play_status = $this->getUserPlayStatus($user_order->status ?? '');
+        if ($play_status != 1) $this->responseToJson(502, '该用户有一笔未完成的订单');
+        //每局价格
+        $GameLevel_Model = $this->GameLevel_Model->scalar($params['game_level_id']);
+        $one_price = $GameLevel_Model['one_price'];
+        //订单金额
+        $order_fee = $one_price * $params['game_num'];
+        //是否计胜负
+        $discount_rax = 0.3;
+        if ($params['is_except'] == 2) {  //不计优惠
+            $order_fee = $order_fee * (1 - $discount_rax);
+        }
+        //金额判定
+        $user_info = $this->User_Model->getUserById($this->user_id);
+        if ($order_fee > $user_info['available_balance'])
+            $this->responseToJson(502, '该用户账户余额不足');
 
-        //如果你这个验证规则经常用，你就可以把$config数组配置文件里面，是个二维数组，如果有error信息，那就是三维数组，//验证规则在这里：application\config\form_validation.php
-        //if ($this->form_validation->run('register') == false) {
-
-        if ($this->form_validation->run() == false) {
-            dump($this->form_validation->error_array());exit;
-            $this->responseToJson(502, $this->form_validation->error_array());
+        //入库给大神推送微信模板消息(结算才扣用户的钱)
+        if ($this->Order_Model->insert([
+            'user_id' => $this->user_id,
+            'game_type' => $params['game_type'],
+            'game_mode' => $params['game_mode'],
+            'is_except' => $params['is_except'],
+            'device' => $params['device'],
+            'game_zone' => $params['game_zone'],
+            'game_level_id' => $params['game_level_id'],
+            'one_price' => $one_price,
+            'game_num' => $params['game_num'],
+            'discount_rax' => $discount_rax,
+            'order_fee' => $order_fee,
+            'remark' => htmlspecialchars($params['remark']),
+            'create_time' => date('Y-m-d H:i:s')
+        ])) {
+            //发消息
+            $this->responseToJson(200, '下单成功');
+        } else {
+            $this->responseToJson(502, '下单失败');
         }
 
-        $config = array(
-            array(
-                'field' => 'game_type',
-                'label' => '',
-                'rules' => 'required'
-            )
-        );
 
-        $this->form_validation->set_rules($config);
-
-        dump($this->form_validation);
-        exit;
-//        $params = $this->input->get();
-//
-//        $validator = $this->Validator->make($params, [
-//            'game_type' => 'required|in:1,2',
-//            'device' => 'required',
-//            'game_zone' => 'required',
-//            'game_level' => 'required',
-//            'game_num' => 'required|integer|max:3|min:1',
-//            'pay_type' => 'required|in:1,2,3'
-//        ], [
-//            'game_type.required' => '陪练游戏类型',
-//            'device.required' => '发单设备',
-//            'game_zone.required' => '陪练大区',
-//            'game_level.required' => '陪练段位',
-//            'game_num.required' => '游戏局数',
-//            'pay_type.required' => '支付方式'
-//        ]);
-//
-//
-//
-//        $this->form_validation->set_rules();
+        dump($order_fee);
     }
+
 
     //根据订单状态获取用户游戏状态
     private function getUserPlayStatus($status)
