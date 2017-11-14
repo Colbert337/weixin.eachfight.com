@@ -63,6 +63,41 @@ class User extends CI_Controller
     {
         $config = array(
             array(
+                'field' => 'car_no',
+                'label' => '车牌号码',
+                'rules' => 'trim|required|min_length[5]',
+            ),
+            array(
+                'field' => 'frame_no',
+                'label' => '车架号码',
+                'rules' => 'trim|required|exact_length[6]',
+            ),
+            array(
+                'field' => 'engine_no',
+                'label' => '发动机号码',
+                'rules' => 'trim|required|exact_length[6]',
+                'errors' => array(
+                    'required' => '这里可以输出你想显示的required错误信息',
+                    'exact_length' => '这里可以输出你想显示exact_length的错误信息',
+                ),
+            ),
+        );
+        // 以下是测试信息，生产环境注释掉
+        $data = ['car_no' => 'yueudshfjdjs', 'frame_no' => '1037547965@qq.com', 'engine_no' => '13011111234'];
+        // 以下为表单验证
+        $this->form_validation->set_data($data);
+        $this->form_validation->set_rules($config);
+
+        //如果你这个验证规则经常用，你就可以把$config数组配置文件里面，是个二维数组，如果有error信息，那就是三维数组，//验证规则在这里：application\config\form_validation.php
+        //if ($this->form_validation->run('register') == false) {
+
+        if ($this->form_validation->run() == false) {
+            dump($this->form_validation->error_array());exit;
+            $this->responseToJson(502, $this->form_validation->error_array());
+        }
+
+        $config = array(
+            array(
                 'field' => 'game_type',
                 'label' => '',
                 'rules' => 'required'
