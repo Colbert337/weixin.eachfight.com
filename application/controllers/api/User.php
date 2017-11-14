@@ -10,8 +10,10 @@ class User extends CI_Controller
         $this->load->model('Order_Model');
         $this->load->model('God_Model');
         $this->load->model('OrderRecord_Model');
+
+        $this->load->library('form_validation');
         //获取用户uid
-        $this->user_id = $this->getUserId();
+//        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -51,6 +53,47 @@ class User extends CI_Controller
         $GameLevel_Model = new GameLevel_Model();
         $data = $GameLevel_Model->getGameLevel(1);
         $this->responseToJson(200, '获取成功', $data);
+    }
+
+
+    /**
+     * 用户下单
+     */
+    public function userCreateOrder()
+    {
+        $config = array(
+            array(
+                'field' => 'game_type',
+                'label' => '',
+                'rules' => 'required'
+            )
+        );
+
+        $this->form_validation->set_rules($config);
+
+        dump($this->form_validation);
+        exit;
+//        $params = $this->input->get();
+//
+//        $validator = $this->Validator->make($params, [
+//            'game_type' => 'required|in:1,2',
+//            'device' => 'required',
+//            'game_zone' => 'required',
+//            'game_level' => 'required',
+//            'game_num' => 'required|integer|max:3|min:1',
+//            'pay_type' => 'required|in:1,2,3'
+//        ], [
+//            'game_type.required' => '陪练游戏类型',
+//            'device.required' => '发单设备',
+//            'game_zone.required' => '陪练大区',
+//            'game_level.required' => '陪练段位',
+//            'game_num.required' => '游戏局数',
+//            'pay_type.required' => '支付方式'
+//        ]);
+//
+//
+//
+//        $this->form_validation->set_rules();
     }
 
     //根据订单状态获取用户游戏状态

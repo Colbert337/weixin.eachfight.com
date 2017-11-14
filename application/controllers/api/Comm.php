@@ -15,6 +15,7 @@ class Comm extends CI_Controller
 
     /**
      * 发送短信,将验证码写入redis,10分钟有效
+     * @author  guochao
      */
     public function sendSms()
     {
@@ -37,6 +38,7 @@ class Comm extends CI_Controller
 
     /**
      * 用户绑定手机号
+     * @author  guochao
      */
     public function bindingMobile()
     {
@@ -62,6 +64,16 @@ class Comm extends CI_Controller
         } else {
             $this->responseToJson(502, '绑定失败');
         }
+    }
+
+
+    /**
+     * 微信账户充值
+     * @author  guochao
+     */
+    public function recharge()
+    {
+
     }
 
 
