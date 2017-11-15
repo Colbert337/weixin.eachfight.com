@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use EasyWeChat\Foundation\Application;
+
 class User extends CI_Controller
 {
     public function __construct()
@@ -12,8 +14,11 @@ class User extends CI_Controller
         $this->load->model('OrderRecord_Model');
 
         $this->load->library('form_validation');
+
+        $this->load->config("wechat");
+        $this->wechat = new Application(config_item("wechat"));
         //获取用户uid
-        $this->user_id = $this->getUserId();
+//        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -104,7 +109,8 @@ class User extends CI_Controller
             'order_fee' => $order_fee,
             'remark' => htmlspecialchars($params['remark']),
             'create_time' => date('Y-m-d H:i:s')
-        ])) {
+        ])
+        ) {
             //发消息
             $this->responseToJson(200, '下单成功');
         } else {
@@ -163,5 +169,24 @@ class User extends CI_Controller
             'weixin_url' => $data['weixin_url'], 'available_balance' => $data['available_balance']];
 
         return $result;
+    }
+
+    //给大神推送模板消息
+    public function sendNotice()
+    {
+        $notice = $this->wechat->notice;
+
+        $userId = '5c57852d86f82a29e548b2cfdbe1e4a9';
+        $templateId = 'A4XHF6abZqWpDg6f0lLvpJceFQ7Fb0GwnWVpptNfdm4';
+        $url = 'http://weixin.eachfight.com';
+        $data = array(
+            "first" => "收到一笔新的陪练需求",
+            "keyword1" => time(),
+            "keyword2" => "20元",
+            "keyword3" => "王者荣耀"
+        );
+
+        $result = $notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($userId)->send();
+        dump($result);
     }
 }
