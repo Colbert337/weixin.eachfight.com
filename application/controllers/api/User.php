@@ -18,7 +18,7 @@ class User extends CI_Controller
         $this->load->config("wechat");
         $this->wechat = new Application(config_item("wechat"));
         //获取用户uid
-//        $this->user_id = $this->getUserId();
+        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -111,14 +111,17 @@ class User extends CI_Controller
             'create_time' => date('Y-m-d H:i:s')
         ])
         ) {
+            //订单信息
+            $game_level = $GameLevel_Model['game_level'];
+            $order_info = game_type()[$params['game_type']] . '|' . device()[$params['device']] . game_zone()[$params['game_zone']]
+                . '|' . $game_level . '|' . $params['game_num'] . '局';
             //发消息
+            $god_openids = ['o05NB0w96SrxDgpS6ZzOapUNq1WY', 'o05NB08e8bdzMV7Kc6Nj3-0zwYaU', 'o05NB0xCHKaf1j1hqnSJzA7NMBD4'];
+            $this->sendNotice($god_openids, $order_fee, $order_info);
             $this->responseToJson(200, '下单成功');
         } else {
             $this->responseToJson(502, '下单失败');
         }
-
-
-        dump($order_fee);
     }
 
 
@@ -172,21 +175,21 @@ class User extends CI_Controller
     }
 
     //给大神推送模板消息
-    public function sendNotice()
+    private function sendNotice($god_openids, $order_fee, $order_info)
     {
         $notice = $this->wechat->notice;
-
-        $userId = 'o05NB0xCHKaf1j1hqnSJzA7NMBD4';
         $templateId = 'A4XHF6abZqWpDg6f0lLvpJceFQ7Fb0GwnWVpptNfdm4';
-        $url = 'http://weixin.eachfight.com';
+        $url = 'http://weixin.eachfight.com';  //大神端入口地址
         $data = array(
             "first" => "收到一笔新的陪练需求",
             "keyword1" => time(),
-            "keyword2" => "20元",
-            "keyword3" => "王者荣耀"
+            "keyword2" => $order_fee . '元',
+            "keyword3" => $order_info
         );
 
-        $result = $notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($userId)->send();
-        dump($result);
+        foreach ($god_openids as $val) {
+            $result = $notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($val)->send();
+            log_message('info', '给大神推送模板消息opendid:' . $val . '--' . json_encode($result));
+        }
     }
 }
