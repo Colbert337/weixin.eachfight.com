@@ -176,7 +176,7 @@ class User extends CI_Controller
     {
         $notice = $this->wechat->notice;
 
-        $userId = '5c57852d86f82a29e548b2cfdbe1e4a9';
+        $userId = 'o05NB0w96SrxDgpS6ZzOapUNq1WY';
         $templateId = 'A4XHF6abZqWpDg6f0lLvpJceFQ7Fb0GwnWVpptNfdm4';
         $url = 'http://weixin.eachfight.com';
         $data = array(
