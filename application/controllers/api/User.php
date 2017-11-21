@@ -35,7 +35,7 @@ class User extends CI_Controller
             $victory_num = [];
             if ($order_id) {
                 $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $user_order->id]);
-                $victory_num = $OrderRecord_Model['victory_num'] ? $OrderRecord_Model['victory_num'] : [];
+                $victory_num = $OrderRecord_Model['victory_num'] ?? [];
             }
 
             $data = ['play_status' => $play_status, 'order_id' => $order_id, 'mobile_bind' => $mobile_bind,
