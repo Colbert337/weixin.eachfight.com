@@ -27,13 +27,20 @@ class User extends CI_Controller
     public function index()
     {
         try {
-            //手机绑定状态
-            $mobile_bind = $this->User_Model->CheckBindMobile($this->user_id);
-            //获取当前最新订单
+            //获取当前用户游戏状态
             $user_order = $this->Order_Model->getUserOrder($this->user_id);
             $play_status = $this->getUserPlayStatus($user_order->status ?? '');
 
+            //获取用户信息
+            $user_data = $this->User_Model->getUserById($this->user_id);
+            //手机绑定状态
+            $mobile_bind = $user_data['mobile'] ? 1 : 0;
+            $user_info = ['headimg_url' => $user_data['headimg_url'], 'nickname' => $user_data['nickname'],
+                'gender' => $user_data['gender'], 'mobile' => $user_data['mobile'], 'weixin_url' => $user_data['weixin_url'],
+                'available_balance' => $user_data['available_balance']];
+
             $order_id = $user_order->id ?? '';
+            //存在大神时获取大神信息
             $god_info = ($order_id && $user_order->god_user_id) ?
                 $this->getGodInfo($user_order->god_user_id, $user_order->game_type) : [];
 
@@ -43,8 +50,8 @@ class User extends CI_Controller
                 $victory_num = $OrderRecord_Model['victory_num'] ?? [];
             }
 
-            $data = ['play_status' => $play_status, 'order_id' => $order_id, 'mobile_bind' => $mobile_bind,
-                'victory_num' => $victory_num, 'god_info' => $god_info];
+            $data = ['play_status' => $play_status, 'user_info' => array_merge($user_info, ['mobile_bind' => $mobile_bind]),
+                'god_info' => $god_info, 'order_info' => ['order_id' => $order_id, 'victory_num' => $victory_num]];
 
             $this->responseToJson(200, '获取成功', $data);
         } catch (\Exception $exception) {
@@ -164,14 +171,11 @@ class User extends CI_Controller
     private function getGodInfo($user_id, $game_type)
     {
         $god_info = $this->God_Model->getGodInfo($user_id, $game_type);
-        $user_info = $this->User_Model->getUserById($user_id);
-        $data = $god_info + $user_info;
-        $result = ['headimg_url' => $data['headimg_url'], 'nickname' => $data['nickname'], 'gender' => $data['gender'],
-            'mobile' => $data['mobile'], 'order_num' => $data['order_num'], 'comment_score' => $data['comment_score'],
-            'game_level' => $god_info['game_level_id'] ? $this->GameLevel_Model->getGameLevelName($god_info['game_level_id']) : '',
-            'weixin_url' => $data['weixin_url'], 'available_balance' => $data['available_balance']];
 
-        return $result;
+        $result = ['order_num' => $god_info['order_num'], 'comment_score' => $god_info['comment_score']];
+        $game_level = $god_info['game_level_id'] ? $this->GameLevel_Model->getGameLevelName($god_info['game_level_id']) : '';
+
+        return array_merge($result, ['game_level' => $game_level->game_level??null]);
     }
 
     //给大神推送模板消息
