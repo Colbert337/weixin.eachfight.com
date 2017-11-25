@@ -117,7 +117,8 @@ class User extends CI_Controller
         ) {
             //订单信息
             $game_level = $GameLevel_Model['game_level'];
-            $order_info = game_type()[$params['game_type']] . '|' . device()[$params['device']] . game_zone()[$params['game_zone']]
+            $order_info = game_type()[$params['game_type']] . '|' . game_mode()[$params['game_mode']] . '|'
+                . device()[$params['device']] . game_zone()[$params['game_zone']]
                 . '|' . $game_level . '|' . $params['game_num'] . '局';
             //发消息
             $god_openids = ['o05NB0w96SrxDgpS6ZzOapUNq1WY', 'o05NB08e8bdzMV7Kc6Nj3-0zwYaU', 'o05NB0xCHKaf1j1hqnSJzA7NMBD4'];

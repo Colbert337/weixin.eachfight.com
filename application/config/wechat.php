@@ -7,14 +7,14 @@ $config["wechat"] = [
      *
      * 当值为 false 时，所有的日志都不会记录
      */
-    'debug'  => true,
+    'debug' => true,
 
     /*
      * 账号基本信息，请从微信公众平台/开放平台获取
      */
-    'app_id'  => 'wx9f3b71e6037e062e',         // AppID
-    'secret'  => '32f98b33e33e395259e3aea0a0ffec70',     // AppSecret
-    'token'   => 't9HazcCJVOcB4Rh5',          // Token
+    'app_id' => 'wx9f3b71e6037e062e',         // AppID
+    'secret' => '32f98b33e33e395259e3aea0a0ffec70',     // AppSecret
+    'token' => 't9HazcCJVOcB4Rh5',          // Token
     'aes_key' => 'pfVaL4o8Ra0Dy8orJAch3BGag0hpwkxBUK5HU2fwl9U',                    // EncodingAESKey
 
     /*
@@ -26,7 +26,7 @@ $config["wechat"] = [
      */
     'log' => [
         'level' => 'debug',
-        'file'  => '/data/api.eachfight.com/application/logs/wechat.log',
+        'file' => APPPATH . 'logs/wechat.log',
     ],
 
     /*
@@ -36,20 +36,20 @@ $config["wechat"] = [
      * callback：OAuth授权完成后的回调页地址(如果使用中间件，则随便填写。。。)
      */
     'oauth' => [
-        'scopes'   =>['snsapi_userinfo'],
+        'scopes' => ['snsapi_userinfo'],
         'callback' => 'api/weixin/oauthBack',
     ],
 
-//    /**
-//     * 微信支付
-//     */
-//    'payment' => [
-//        'merchant_id'        => env('WECHAT_PAYMENT_MERCHANT_ID', '1220352101'),
-//        'key'                => env('WECHAT_PAYMENT_KEY', '5d43e151ae0d308b89343e01d9ced62f'),
-//        'cert_path'          => env('WECHAT_PAYMENT_CERT_PATH', app_path().'/key/wechat/apiclient_cert.pem'),  //XXX: 绝对路径！！！！
-//        'key_path'           => env('WECHAT_PAYMENT_KEY_PATH', app_path().'/key/wechat/apiclient_key.pem'),       //XXX: 绝对路径！！！！
-//        'notify_url'         => ''
-//    ],
+    /**
+     * 微信支付
+     */
+    'payment' => [
+        'merchant_id' => '1490288602',
+        'key' => 'd86a3bc677466899c80b4ed1ce8be99a',
+        'cert_path' => APPPATH . 'key/wechat/apiclient_cert.pem',  //绝对路径
+        'key_path' => APPPATH . '/key/wechat/apiclient_key.pem',  //绝对路径
+        'notify_url' => ''
+    ],
 
     'guzzle' => [
         'timeout' => 3.0, // 超时时间（秒）

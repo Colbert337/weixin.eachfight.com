@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+use EasyWeChat\Foundation\Application;
+
 class Comm extends CI_Controller
 {
 
@@ -8,7 +10,12 @@ class Comm extends CI_Controller
     {
         parent::__construct();
         $this->load->library('Sms');
-        $this->load->helper('safe_helper');
+        $this->load->helper('used_helper');
+
+        $this->load->config("wechat");
+        $this->wechat = new Application(config_item("wechat"));
+
+        $this->load->model('UserCashJournal_Model');
         //获取用户uid
         $this->user_id = $this->getUserId();
     }
@@ -68,13 +75,104 @@ class Comm extends CI_Controller
 
 
     /**
-     * 微信账户充值
+     * 用户账户微信充值
      * @author  guochao
      */
     public function recharge()
     {
+        $user_id = $this->user_id;
+        $money = $this->input->post('money');
+        if (!$money || !is_numeric($money) || strstr($money, '.'))
+            $this->responseToJson(502, '金额错误');
 
+        $money = 0.01;
+
+        $user_data = $this->User_Model->getUserById($user_id);
+        if (!isset($user_data['openid']) || !$user_data['openid'])
+            $this->responseToJson(502, '该用户还未注册');
+
+        $openid = $user_data['openid'];
+        $original_available_balance = $user_data['available_balance'];
+        $out_trade_no = uuid();
+        $attributes = [
+            'trade_type' => 'JSAPI',
+            'body' => '猪游纪账户充值',
+            'detail' => '用户id:' . $user_id . '|账户充值',
+            'out_trade_no' => $out_trade_no,
+            'total_fee' => intval($money * 100), // 单位：分
+            'notify_url' => base_url() . 'api/comm/payNotify', // 支付结果通知网址，如果不设置则会使用配置里的默认地址
+            'openid' => $openid // trade_type=JSAPI，此参数必传，用户在商户appid下的唯一标识，
+        ];
+
+        $this->db->trans_begin();
+        try {
+            $this->UserCashJournal_Model->insert(['out_trade_no' => $out_trade_no, 'user_id' => $user_id,
+                'trade_type' => 1, 'money' => $money, 'inorout' => 1, 'pay_type' => 2, 'recharge_status' => 1,
+                'original_available_balance' => $original_available_balance, 'create_time' => date('Y-m-d H:i:s')]);
+
+            $order = new \EasyWeChat\Payment\Order($attributes);
+            $payment = $this->wechat->payment;
+            $result = $payment->prepare($order);
+            if ($result->return_code == 'SUCCESS' && $result->result_code == 'SUCCESS') {
+                $this->db->trans_commit();
+                $prepayId = $result->prepay_id;
+                $data = $payment->configForJSSDKPayment($prepayId);
+                $this->responseToJson(200, '创建成功', ['weixin_pay' => $data, 'out_trade_no' => $out_trade_no]);
+            } else {
+                throw new Exception($result->return_msg);
+            }
+        } catch (\Exception $exception) {
+            $this->db->trans_rollback();
+            log_message('error', '创建预充值订单接口异常' . $exception->getMessage());
+            $this->responseToJson(502, $exception->getMessage());
+        }
     }
 
+    //微信异步通知
+    public function payNotify()
+    {
+        $response = $this->wechat->payment->handleNotify(function ($notify, $successful) {
+            $out_trade_no = $notify->out_trade_no;
+            $userCashJournal = $this->UserCashJournal_Model->scalarBy(['out_trade_no' => $out_trade_no]);
+            if (!$userCashJournal) return 'recharge order is not exist';
+
+            //已处理
+            if ($userCashJournal->recharge_status != 1) return true;
+            //接口返回订单金额
+            if ((100 * $userCashJournal['money']) != $notify->total_fee) {
+                log_message('error', '微信异步通知接口返回订单金额不对');
+                return false;
+            }
+
+            $user_data = $this->User_Model->getUserById($userCashJournal['user_id']);
+            //用户是否支付
+            if ($successful) {  //支付成功
+                $this->db->trans_begin();
+                $current_available_balance = $user_data['original_available_balance'] + $userCashJournal['money'];
+                //用户账户加钱
+                $res_1 = $this->User_Model->update(['id' => $userCashJournal['user_id'],
+                    ['original_available_balance' => $current_available_balance, 'update_time' => date('Y-m-d H:i:s')]]);
+                //更新用户资金流水状态
+                $res_2 = $this->UserCashJournal_Model->update(['out_trade_no' => $out_trade_no],
+                    ['recharge_status' => 2, 'transaction_id' => $notify->transaction_id,
+                        'current_available_balance'=>$current_available_balance, 'update_time' => date('Y-m-d H:i:s')]);
+
+                if ($res_1 && $res_2) {
+                    $this->db->trans_commit();
+                    return true;
+                } else {
+                    log_message('error', '充值更新数据异常');
+                    $this->db->trans_rollback();
+                }
+            } else {
+                $this->UserCashJournal_Model->update(['out_trade_no' => $out_trade_no],
+                    ['recharge_status' => 3, 'update_time' => date('Y-m-d H:i:s')]);
+                log_message('error', '微信异步用户支付失败');
+                return 'user not pay success';
+            }
+        });
+
+        return $response;
+    }
 
 }
