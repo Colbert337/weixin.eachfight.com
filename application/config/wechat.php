@@ -31,7 +31,7 @@ $config["wechat"] = [
 
     /*
      * OAuth 配置
-     *
+     * 
      * scopes：公众平台（snsapi_userinfo / snsapi_base），开放平台：snsapi_login
      * callback：OAuth授权完成后的回调页地址(如果使用中间件，则随便填写。。。)
      */
@@ -54,22 +54,5 @@ $config["wechat"] = [
     'guzzle' => [
         'timeout' => 3.0, // 超时时间（秒）
         //'verify' => false, // 关掉 SSL 认证（强烈不建议！！！）
-    ],
-
-    /*
-     * 开发模式下的免授权模拟授权用户资料
-     *
-     * 当 enable_mock 为 true 则会启用模拟微信授权，用于开发时使用，开发完成请删除或者改为 false 即可
-     */
-    // 'enable_mock' => env('WECHAT_ENABLE_MOCK', true),
-    // 'mock_user' => [
-    //     "openid" =>"odh7zsgI75iT8FRh0fGlSojc9PWM",
-    //     // 以下字段为 scope 为 snsapi_userinfo 时需要
-    //     "nickname" => "overtrue",
-    //     "sex" =>"1",
-    //     "province" =>"北京",
-    //     "city" =>"北京",
-    //     "country" =>"中国",
-    //     "headimgurl" => "http://wx.qlogo.cn/mmopen/C2rEUskXQiblFYMUl9O0G05Q6pKibg7V1WpHX6CIQaic824apriabJw4r6EWxziaSt5BATrlbx1GVzwW2qjUCqtYpDvIJLjKgP1ug/0",
-    // ],
+    ]
 ];
