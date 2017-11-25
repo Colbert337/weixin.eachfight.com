@@ -31,7 +31,6 @@ $config["wechat"] = [
 
     /*
      * OAuth 配置
-     * 
      * scopes：公众平台（snsapi_userinfo / snsapi_base），开放平台：snsapi_login
      * callback：OAuth授权完成后的回调页地址(如果使用中间件，则随便填写。。。)
      */
