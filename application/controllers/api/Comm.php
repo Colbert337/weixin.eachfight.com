@@ -155,7 +155,7 @@ class Comm extends CI_Controller
                 //更新用户资金流水状态
                 $res_2 = $this->UserCashJournal_Model->update(['out_trade_no' => $out_trade_no],
                     ['recharge_status' => 2, 'transaction_id' => $notify->transaction_id,
-                        'current_available_balance'=>$current_available_balance, 'update_time' => date('Y-m-d H:i:s')]);
+                        'current_available_balance' => $current_available_balance, 'update_time' => date('Y-m-d H:i:s')]);
 
                 if ($res_1 && $res_2) {
                     $this->db->trans_commit();
