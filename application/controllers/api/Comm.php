@@ -138,7 +138,7 @@ class Comm extends CI_Controller
             if (!$userCashJournal) return 'recharge order is not exist';
 
             //已处理
-            if ($userCashJournal->recharge_status != 1) return true;
+            if ($userCashJournal['recharge_status'] != 1) return true;
             //接口返回订单金额
             if ((100 * $userCashJournal['money']) != $notify->total_fee) {
                 log_message('error', '微信异步通知接口返回订单金额不对');
