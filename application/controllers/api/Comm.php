@@ -132,7 +132,7 @@ class Comm extends CI_Controller
     public function payNotify()
     {
         $response = $this->wechat->payment->handleNotify(function ($notify, $successful) {
-            log_message('info', '微信异步通知接口返回数据：'.json_encode($notify));
+            log_message('info', '微信异步通知接口返回数据：' . json_encode($notify));
             $out_trade_no = $notify->out_trade_no;
             $userCashJournal = $this->UserCashJournal_Model->scalarBy(['out_trade_no' => $out_trade_no]);
             if (!$userCashJournal) return 'recharge order is not exist';
@@ -151,8 +151,8 @@ class Comm extends CI_Controller
                 $this->db->trans_begin();
                 $current_available_balance = $user_data['available_balance'] + $userCashJournal['money'];
                 //用户账户加钱
-                $res_1 = $this->User_Model->update(['id' => $userCashJournal['user_id'],
-                    ['original_available_balance' => $current_available_balance, 'update_time' => date('Y-m-d H:i:s')]]);
+                $res_1 = $this->User_Model->update(['id' => $userCashJournal['user_id']],
+                    ['available_balance' => $current_available_balance, 'update_time' => date('Y-m-d H:i:s')]);
                 //更新用户资金流水状态
                 $res_2 = $this->UserCashJournal_Model->update(['out_trade_no' => $out_trade_no],
                     ['recharge_status' => 2, 'transaction_id' => $notify->transaction_id,
