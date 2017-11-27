@@ -16,8 +16,6 @@ class Comm extends CI_Controller
         $this->wechat = new Application(config_item("wechat"));
 
         $this->load->model('UserCashJournal_Model');
-        //获取用户uid
-        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -49,7 +47,8 @@ class Comm extends CI_Controller
      */
     public function bindingMobile()
     {
-        $user_id = $this->user_id;
+        //获取用户uid
+        $user_id = $this->getUserId();
         $mobile = $this->input->post('mobile');
         $code = $this->input->post('code');
         if (!$mobile) $this->responseToJson(502, 'mobile参数缺少');
@@ -80,7 +79,8 @@ class Comm extends CI_Controller
      */
     public function recharge()
     {
-        $user_id = $this->user_id;
+        //获取用户uid
+        $user_id = $this->getUserId();
         $money = $this->input->post('money');
         if (!$money || !is_numeric($money) || strstr($money, '.'))
             $this->responseToJson(502, '金额错误');
