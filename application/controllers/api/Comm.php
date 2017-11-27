@@ -149,7 +149,7 @@ class Comm extends CI_Controller
             //用户是否支付
             if ($successful) {  //支付成功
                 $this->db->trans_begin();
-                $current_available_balance = $user_data['original_available_balance'] + $userCashJournal['money'];
+                $current_available_balance = $user_data['available_balance'] + $userCashJournal['money'];
                 //用户账户加钱
                 $res_1 = $this->User_Model->update(['id' => $userCashJournal['user_id'],
                     ['original_available_balance' => $current_available_balance, 'update_time' => date('Y-m-d H:i:s')]]);
