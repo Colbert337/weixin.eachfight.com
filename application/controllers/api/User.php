@@ -99,7 +99,7 @@ class User extends CI_Controller
             $this->responseToJson(502, '该用户账户余额不足');
 
         //入库给大神推送微信模板消息(结算才扣用户的钱)
-        if ($this->Order_Model->insert([
+        $insert_id = $this->Order_Model->insert([
             'user_id' => $this->user_id,
             'game_type' => $params['game_type'],
             'game_mode' => $params['game_mode'],
@@ -113,8 +113,8 @@ class User extends CI_Controller
             'order_fee' => $order_fee,
             'remark' => htmlspecialchars($params['remark']),
             'create_time' => date('Y-m-d H:i:s')
-        ])
-        ) {
+        ],true);
+        if ($insert_id) {
             //订单信息
             $game_level = $GameLevel_Model['game_level'];
             $order_info = game_type()[$params['game_type']] . '|' . game_mode()[$params['game_mode']] . '|'
@@ -122,7 +122,7 @@ class User extends CI_Controller
                 . '|' . $game_level . '|' . $params['game_num'] . '局';
             //发消息
             $god_openids = ['o05NB0w96SrxDgpS6ZzOapUNq1WY', 'o05NB08e8bdzMV7Kc6Nj3-0zwYaU', 'o05NB0xCHKaf1j1hqnSJzA7NMBD4'];
-            $this->sendNotice($god_openids, $order_fee, $order_info);
+            $this->sendNotice($god_openids, $order_fee, $order_info,$insert_id);
             $this->responseToJson(200, '下单成功');
         } else {
             $this->responseToJson(502, '下单失败');
@@ -181,11 +181,11 @@ class User extends CI_Controller
     }
 
     //给大神推送模板消息
-    private function sendNotice($god_openids, $order_fee, $order_info)
+    private function sendNotice($god_openids, $order_fee, $order_info,$order_id)
     {
         $notice = $this->wechat->notice;
         $templateId = 'A4XHF6abZqWpDg6f0lLvpJceFQ7Fb0GwnWVpptNfdm4';
-        $url = 'http://weixin.eachfight.com';  //大神端入口地址
+        $url = 'http://weixin.eachfight.com/#/mantio?order_id='.$order_id;  //大神端入口地址
         $data = array(
             "first" => "收到一笔新的陪练需求",
             "keyword1" => time(),
