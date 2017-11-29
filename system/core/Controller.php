@@ -121,10 +121,13 @@ class CI_Controller
 
         $userInfo = $this->User_Model->CheckRegister($token);
         if (!$userInfo || !isset($userInfo['openid']) || !isset($userInfo['id']))
-            $this->responseToJson(502, '该用户还未注册');
+            $this->responseToJson(501, '该用户还未注册');
+
         //上线开启
-//        if ($this->cache->redis->get($token) != md5($userInfo['openid']))
-//            $this->responseToJson(502, '验证未通过');
+        if (!$this->cache->redis->get($token))
+            $this->responseToJson(502, 'token过期');
+        if ($this->cache->redis->get($token) != md5($userInfo['openid']))
+            $this->responseToJson(502, '验证未通过');
 
         return $userInfo['id'];
     }
