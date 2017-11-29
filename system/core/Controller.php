@@ -102,11 +102,12 @@ class CI_Controller
      */
     protected function responseToJson(int $status, string $msg, $data = [])
     {
-        if (!in_array($status, [200, 502])) {
-            $this->response(['status' => 402, 'msg' => "返回状态码不正确，请联系开发者！"]);
+        if (!in_array($status, [200, 502, 501])) {
+            echo json_encode(['status' => 402, 'msg' => '返回状态码不正确，请联系开发者!']);
+        } else {
+            echo json_encode(['status' => $status, 'msg' => $msg, 'data' => $data]);
         }
 
-        echo json_encode(['status' => $status, 'msg' => $msg, 'data' => $data]);
         exit;
     }
 
@@ -121,7 +122,7 @@ class CI_Controller
 
         $userInfo = $this->User_Model->CheckRegister($token);
         if (!$userInfo || !isset($userInfo['openid']) || !isset($userInfo['id']))
-            $this->responseToJson(501, '该用户还未注册');
+            $this->responseToJson(501, '该用户还未注册或token错误');
 
         //上线开启
         if (!$this->cache->redis->get($token))
