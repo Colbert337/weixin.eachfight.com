@@ -126,7 +126,7 @@ class CI_Controller
 
         //上线开启
         if (!$this->cache->redis->get($token))
-            $this->responseToJson(502, 'token过期');
+            $this->responseToJson(501, 'token过期');
         if ($this->cache->redis->get($token) != md5($userInfo['openid']))
             $this->responseToJson(502, '验证未通过');
 
