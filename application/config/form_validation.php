@@ -69,7 +69,25 @@ $config = array(
             'field' => 'remark',
             'label' => 'remark',  //下单备注(游戏id等)
             'rules' => 'trim|max_length[10]'
-        )]
+        )],
 
-
+    //用户操作订单
+    'operate_order'=>[
+        array(
+            'field' => 'order_id',
+            'label' => 'order_id',
+            'rules' => 'integer|required',
+            'errors' => array(
+                'required' => '订单id参数错误'
+            ),
+        ),
+        array(
+            'field' => 'type',
+            'label' => 'type',
+            'rules' => 'integer|required|in_list[1,2,3,4]',
+            'errors' => array(
+                'required' => '操作类型参数错误'
+            ),
+        ),
+    ]
 );
