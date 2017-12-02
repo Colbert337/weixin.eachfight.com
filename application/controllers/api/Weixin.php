@@ -12,7 +12,7 @@ class Weixin extends CI_Controller
         $this->wechat = new Application(config_item("wechat"));
 
         $this->load->helper('cookie');
-        $this->load->helper('emoji_helper');
+        $this->load->helper('used_helper');
     }
 
     //微信用户进行公众号授权
@@ -43,7 +43,7 @@ class Weixin extends CI_Controller
 
 
     /**
-     * 前端给code 授权获取用户token 注册入库
+     * 前端给code 授权获取用户访问随机token  注册入库
      */
     public function weboauth()
     {
@@ -56,24 +56,32 @@ class Weixin extends CI_Controller
         try {
             $user = $this->wechat->oauth->user();
             $data = $user->getOriginal();
-            //加密
-            $token = md5($data['openid'] . 'eachfight');
-            //存token
-            $this->cache->redis->save($token, md5($data['openid']), 7200);
-            log_message('info', '授权获取用户token:' . $token);
+            //随机token
+            $token = uuid();
+            //给token赋值并加密
+            $this->cache->redis->save($token, md5($data['openid'] . 'eachfight'), 7200);
+            log_message('info', '授权获取用户随机token:' . $token);
             //没有注册过 注册
-            if (!$this->User_Model->CheckRegister($token)) {
-                $User_Model->insert([
+            if (!$this->User_Model->CheckRegister($data['openid'])) {
+                if (!$User_Model->insert([
                     'openid' => $data['openid'],
                     'token' => $token,
-                    'nickname' => $data['nickname'],
+                    'nickname' => replace_emoji($data['nickname']),
                     'gender' => $data['sex'],  //1时是男性，值为2时是女性，值为0时是未知
                     'headimg_url' => $data['headimgurl'],
                     'create_time' => date('Y-m-d H:i:s')
-                ]);
+                ])) {
+                    throw new \Exception('用户注册入库失败');
+                }
+            } else {  //更新token
+                if (!$User_Model->update(['openid' => $data['openid']],
+                    ['token' => $token, 'update_time' => date('Y-m-d H:i:s')])) {
+                    throw new \Exception('更新访问token失败');
+                }
             }
+
             $this->responseToJson(200, '登陆成功', ['token' => $token]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->responseToJson(502, $e->getMessage());
         }
     }

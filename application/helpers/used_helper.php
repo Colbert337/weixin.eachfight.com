@@ -29,3 +29,36 @@ if (!function_exists('uuid')) {
         return $uuid;
     }
 }
+
+//表情转字符串
+if (!function_exists('emoji_to_string')) {
+    function emoji_to_string($str)
+    {
+        $text = json_encode($str); //暴露出unicode
+        $text = preg_replace_callback('/\\\\\\\\/i', function ($str) {
+            return '\\';
+        }, $text); //将两条斜杠变成一条，其他不动
+
+        $data = json_decode($text);
+        $data = "{$data}";
+        return $data;
+    }
+}
+
+//emoji表情转unicode
+if (!function_exists('replace_emoji')) {
+    function replace_emoji($str)
+    {
+        if (strlen($str) == 0) return "";
+
+        $text = $str; //可能包含二进制emoji表情字符串
+        $tmpStr = json_encode($text); //暴露出unicode
+
+        $tmpStr = preg_replace_callback("/(\\\u[ed][0-9a-f]{3})/i", function ($str) {
+            return addslashes($str[0]);
+        }, $tmpStr);
+        $text = json_decode($tmpStr);
+
+        return $text;
+    }
+}

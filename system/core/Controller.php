@@ -120,15 +120,17 @@ class CI_Controller
         log_message('info', 'getUserId获取到的数据token:' . $token);
         if (!$token) $this->responseToJson(502, 'token参数缺少');
 
-        $userInfo = $this->User_Model->CheckRegister($token);
-        if (!$userInfo || !isset($userInfo['openid']) || !isset($userInfo['id']))
-            $this->responseToJson(501, '该用户还未注册或token错误');
-
         //上线开启
         if (!$this->cache->redis->get($token))
             $this->responseToJson(501, 'token过期');
-        if ($this->cache->redis->get($token) != md5($userInfo['openid']))
-            $this->responseToJson(502, '验证未通过');
+
+        $userInfo = $this->User_Model->getUserbyToken($token);
+        if (!$userInfo || !isset($userInfo['openid']) || !isset($userInfo['id']))
+            $this->responseToJson(501, '该用户还未注册');
+
+        //上线开启
+        if ($this->cache->redis->get($token) != md5($userInfo['openid'] . 'eachfight'))
+            $this->responseToJson(502, 'token验证未通过');
 
         return $userInfo['id'];
     }

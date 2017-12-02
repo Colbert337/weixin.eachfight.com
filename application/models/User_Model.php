@@ -31,18 +31,32 @@ class User_Model extends MY_Model
     }
 
     /**
-     * 根据token判断用户是否注册过
+     * 根据openid判断用户是否注册
+     * @param string $openid
+     * @return bool
+     */
+    public function CheckRegister($openid)
+    {
+        $this->db->select(['id'])->from(self::TBL)->where("openid", $openid);
+        $query = $this->db->get();
+        $row = $query->row();
+        $query->free_result();
+
+        return $row->id ? 1 : 0;
+    }
+
+    /**
+     * 根据token获取用户信息
      * @param string $token
      * @return bool
      */
-    public function CheckRegister($token)
+    public function getUserbyToken($token)
     {
         $this->db->select(['id', 'openid'])->from(self::TBL)->where("token", $token);
         $query = $this->db->get();
-        $data = $query->row_array();
         $query->free_result();
 
-        return $data;
+        return $query->row_array();
     }
 
     /**
@@ -55,6 +69,7 @@ class User_Model extends MY_Model
         $this->db->select(['mobile'])->from(self::TBL)->where("id", $id);
         $query = $this->db->get();
         $row = $query->row();
+        $query->free_result();
 
         return $row->mobile ? 1 : 0;
     }
