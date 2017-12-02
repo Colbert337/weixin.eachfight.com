@@ -113,7 +113,7 @@ class User extends CI_Controller
             'order_fee' => $order_fee,
             'remark' => htmlspecialchars($params['remark']),
             'create_time' => date('Y-m-d H:i:s')
-        ],true);
+        ], true);
         if ($insert_id) {
             //订单信息
             $game_level = $GameLevel_Model['game_level'];
@@ -122,7 +122,7 @@ class User extends CI_Controller
                 . '|' . $game_level . '|' . $params['game_num'] . '局';
             //发消息
             $god_openids = ['o05NB0w96SrxDgpS6ZzOapUNq1WY', 'o05NB08e8bdzMV7Kc6Nj3-0zwYaU', 'o05NB0xCHKaf1j1hqnSJzA7NMBD4'];
-            $this->sendNotice($god_openids, $order_fee, $order_info,$insert_id);
+            $this->sendNotice($god_openids, $order_fee, $order_info, $insert_id);
             $this->responseToJson(200, '下单成功');
         } else {
             $this->responseToJson(502, '下单失败');
@@ -165,6 +165,54 @@ class User extends CI_Controller
         return $play_status;
     }
 
+    /**
+     * 根据大神用户id及订单id获取 获取大神订单状态
+     * @param $user_id
+     * @param $order_id
+     * @return bool|int
+     */
+    public function getGodPlayStatus($user_id,$order_id)
+    {
+        $order = $this->Order_Model->scalar($order_id);
+        $status = $order['status'];
+        switch ($status) {
+            case 1:
+                $play_status = 1;  //等待抢单
+                break;
+
+            case 2:
+            case 4:
+                $play_status = 2;  //订单已取消
+                break;
+
+            case 3:
+                if($order['god_user_id'] == $user_id){
+                    $play_status = 3;  //抢单成功待用户准备
+                }else{
+                    $play_status = 4;  //抢单失败
+                }
+                break;
+
+            case 5:
+                $play_status = 5;  //待完成游戏
+                break;
+
+            case 6:
+                $play_status = 6;  //待提交战绩
+                break;
+
+            case 7:
+                $play_status = 7;  //申诉中
+                break;
+
+            case 8:
+                $play_status = 8;  //订单完成
+                break;
+        }
+
+        return $play_status;
+    }
+
     //根据用户id及游戏类型获取大神的信息
     private function getGodInfo($user_id, $game_type)
     {
@@ -181,11 +229,11 @@ class User extends CI_Controller
     }
 
     //给大神推送模板消息
-    private function sendNotice($god_openids, $order_fee, $order_info,$order_id)
+    private function sendNotice($god_openids, $order_fee, $order_info, $order_id)
     {
         $notice = $this->wechat->notice;
         $templateId = 'A4XHF6abZqWpDg6f0lLvpJceFQ7Fb0GwnWVpptNfdm4';
-        $url = 'http://weixin.eachfight.com/#/mantio?order_id='.$order_id;  //大神端入口地址
+        $url = 'http://weixin.eachfight.com/#/mantio?order_id=' . $order_id;  //大神端入口地址
         $data = array(
             "first" => "收到一笔新的陪练需求",
             "keyword1" => time(),

@@ -56,7 +56,7 @@ class User_Model extends MY_Model
         $query = $this->db->get();
         $data = $query->row_array();
         $query->free_result();
-        
+
         return $data;
     }
 
