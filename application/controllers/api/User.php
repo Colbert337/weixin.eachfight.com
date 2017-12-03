@@ -15,6 +15,7 @@ class User extends CI_Controller
         $this->load->model('UserCashJournal_Model');
 
         $this->load->library('form_validation');
+        $this->load->helper('used_helper');
 
         $this->load->config("wechat");
         $this->wechat = new Application(config_item("wechat"));
@@ -109,6 +110,7 @@ class User extends CI_Controller
             'game_zone' => $params['game_zone'],
             'game_level_id' => $params['game_level_id'],
             'one_price' => $one_price,
+            'actual_price' => $actual_price,
             'game_num' => $params['game_num'],
             'discount_rax' => $discount_rax,
             'order_fee' => $order_fee,
@@ -146,11 +148,11 @@ class User extends CI_Controller
         $type = $params['type'];
         $order_id = $params['order_id'];
         //状态配对
-        $status_arr = [2 => 1, 3 => 2, 3 => 3, 5 => 4];   //游戏状态=>操作类型
+        $status_arr = [1 => 2, 2 => 3, 3 => 3, 4 => 5];   //操作类型=>游戏状态
         $order = $this->Order_Model->scalarBy(['id' => $order_id]);
         if ($order['user_id'] != $user_id) $this->responseToJson(502, '非该用户下的订单');
         $play_status = $this->getUserPlayStatus($order['status']);
-        if ($status_arr[$play_status] != $type)
+        if ($status_arr[$type] != $play_status)
             $this->responseToJson(502, '订单状态异常');
 
         $change_arr = [1 => 2, 2 => 4, 3 => 5, 4 => 9]; //操作类型=>操作后状态
@@ -268,7 +270,7 @@ class User extends CI_Controller
         $god_info = $this->God_Model->getGodInfo($user_id, $game_type);
         $user_info = $this->User_Model->getUserById($user_id);
 
-        $result = ['headimg_url' => $user_info['headimg_url'], 'nickname' => $user_info['nickname'],
+        $result = ['headimg_url' => $user_info['headimg_url'], 'nickname' => emoji_to_string($user_info['nickname']),
             'gender' => $user_info['gender'], 'mobile' => $user_info['mobile'], 'weixin_url' => $user_info['weixin_url'],
             'order_num' => $god_info['order_num'], 'comment_score' => $god_info['comment_score']];
 
