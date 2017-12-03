@@ -50,8 +50,10 @@ class User extends CI_Controller
                 $victory_num = $OrderRecord_Model['victory_num'] ?? [];
             }
 
-            $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => $god_info,
-                'order_info' => ['order_id' => $order_id, 'victory_num' => $victory_num]];
+            $order_info = ($play_status == 1) ? [] : ['order_id' => $order_id, 'victory_num' => $victory_num];
+
+            $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
+                'order_info' => $order_info];
 
             $this->responseToJson(200, '获取成功', $data);
         } catch (\Exception $exception) {
@@ -251,7 +253,7 @@ class User extends CI_Controller
         if ($order['user_id'] != $user_id) $this->responseToJson(502, '非该用户下的订单');
         if ($order['status'] != 9) $this->responseToJson(502, '订单状态异常');
         $order_comment = new OrderComment_Model();
-        if($order_comment->scalarBy(['order_id'=>$order_id]))
+        if ($order_comment->scalarBy(['order_id' => $order_id]))
             $this->responseToJson(502, '该订单已评论');
 
         try {
