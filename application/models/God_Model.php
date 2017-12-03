@@ -46,5 +46,21 @@ class God_Model extends MY_Model
             ->row_array();
     }
 
+    /**
+     * 更新接单次数
+     * @param $where
+     * @return mixed
+     */
+    public function updateOrderNum($where)
+    {
+        $this->db->set('order_num', 'order_num+1');
+        $this->db->set('update_time', date('Y-m-d H:i:s'));
+        $this->db->where($where);
+        $this->db->limit(1);
+        $this->db->update(self::TBL);
+
+        return $this->db->affected_rows();
+    }
+
 
 }

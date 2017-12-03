@@ -13,6 +13,7 @@ class User extends CI_Controller
         $this->load->model('God_Model');
         $this->load->model('OrderRecord_Model');
         $this->load->model('UserCashJournal_Model');
+        $this->load->model('OrderComment_Model');
 
         $this->load->library('form_validation');
         $this->load->helper('used_helper');
@@ -200,21 +201,27 @@ class User extends CI_Controller
                     'inorout' => 2, 'pay_type' => 1, 'out_id' => $order_id, 'original_available_balance' => $user_available_balance,
                     'current_available_balance' => $user_current_available_balance, 'create_time' => date('Y-m-d H:i:s')]);
 
-                //大神加
+                //大神加 更新可提现额度 更新成功接单次数
                 $god_info = $this->User_Model->getUserById($order['god_user_id']);
                 if (!isset($god_info['available_balance'])) {
                     throw new \Exception('用户账户余额异常');
                 }
                 $god_available_balance = $god_info['available_balance'];
+                $withdrawal_limit = $god_info['withdrawal_limit'] + $god_fee;
                 $god_current_available_balance = $god_available_balance + $god_fee;
                 $result_4 = $this->User_Model->update(['id' => $order['god_user_id']],
-                    ['available_balance' => $god_current_available_balance, 'update_time' => date('Y-m-d H:i:s')]);
+                    ['available_balance' => $god_current_available_balance, 'withdrawal_limit' => $withdrawal_limit,
+                        'update_time' => date('Y-m-d H:i:s')]);
 
                 $result_5 = $this->UserCashJournal_Model->insert(['user_id' => $order['god_user_id'], 'trade_type' => 3,
                     'money' => $god_fee, 'inorout' => 1, 'pay_type' => 1, 'out_id' => $order_id,
                     'original_available_balance' => $god_available_balance, 'current_available_balance' => $god_current_available_balance,
                     'create_time' => date('Y-m-d H:i:s')]);
-                if ($result_1 && $result_2 && $result_3 && $result_4 && $result_5) {
+
+                //更新成功接单次数
+                $result_6 = $this->God_Model->updateOrderNum(['user_id' => $order['god_user_id'], 'game_type' => $order['game_type']]);
+
+                if ($result_1 && $result_2 && $result_3 && $result_4 && $result_5 && $result_6) {
                     $this->db->trans_commit();
                     $this->responseToJson(200, '操作成功');
                 } else {
@@ -225,6 +232,54 @@ class User extends CI_Controller
                 log_message('error', '数据结算异常接口异常' . $exception->getMessage());
                 $this->responseToJson(502, $exception->getMessage());
             }
+        }
+    }
+
+    //提交评论
+    public function submitComment()
+    {
+        $user_id = $this->user_id;
+        $params = $this->input->post();
+        //参数校验
+        $this->form_validation->set_data($params);
+        if ($this->form_validation->run('submit_comment') == false) {
+            $errors = array_values($this->form_validation->error_array());
+            $this->responseToJson(502, array_shift($errors));
+        }
+        $order_id = $params['order_id'];
+        $order = $this->Order_Model->scalarBy(['id' => $order_id]);
+        if ($order['user_id'] != $user_id) $this->responseToJson(502, '非该用户下的订单');
+        if ($order['status'] != 9) $this->responseToJson(502, '订单状态异常');
+        $order_comment = new OrderComment_Model();
+        if($order_comment->scalarBy(['order_id'=>$order_id]))
+            $this->responseToJson(502, '该订单已评论');
+
+        try {
+            $this->db->trans_begin();
+            //插入数据
+            $result_1 = $order_comment->insert(['order_id' => $order_id, 'game_type' => $order['game_type'], 'user_id' => $order['user_id'],
+                'god_user_id' => $order['god_user_id'], 'star_num' => $params['star_num'],
+                'context' => htmlspecialchars($params['context']), 'create_time' => date('Y-m-d H:i:s')]);
+            //更新分数  总星数/总成功接单数
+            $god_info = $this->God_Model->getGodInfo($order['god_user_id'], $order['game_type']);
+            $all_order = $god_info['order_num'] + 1;
+            $star = $order_comment->getAllStar(['god_user_id' => $order['god_user_id'],
+                'game_type' => $order['game_type']]);
+            $all_star = $star->all_star + 5;
+            $comment_score = round($all_star / $all_order, 2);
+            $result_2 = $this->God_Model->update(['user_id' => $order['god_user_id'],
+                'game_type' => $order['game_type']], ['comment_score' => $comment_score,
+                'update_time' => date('Y-m-d H:i:s')]);
+
+            if ($result_1 && $result_2) {
+                $this->db->trans_commit();
+                $this->responseToJson(200, '评论成功');
+            } else {
+                $this->db->trans_rollback();
+                throw new \Exception('提交评论异常');
+            }
+        } catch (\Exception $exception) {
+            $this->responseToJson(502, $exception->getMessage());
         }
     }
 

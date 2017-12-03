@@ -89,5 +89,34 @@ $config = array(
                 'required' => '操作类型参数错误'
             ),
         ),
+    ],
+
+    //提交评论
+    'submit_comment'=>[
+        array(
+            'field' => 'order_id',
+            'label' => 'order_id',
+            'rules' => 'integer|required',
+            'errors' => array(
+                'required' => 'order_id参数错误'
+            ),
+        ),
+        array(
+            'field' => 'star_num',
+            'label' => 'star_num',
+            'rules' => 'integer|required|in_list[1,2,3,4,5]',
+            'errors' => array(
+                'required' => 'star_num参数错误'
+            ),
+        ),
+        array(
+            'field' => 'context',
+            'label' => 'context',
+            'rules' => 'trim|max_length[200]',
+            'errors' => array(
+                'required' => 'context参数错误'
+            ),
+        ),
     ]
+
 );
