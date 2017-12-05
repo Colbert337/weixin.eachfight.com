@@ -72,7 +72,7 @@ $config = array(
         )],
 
     //用户操作订单
-    'operate_order'=>[
+    'operate_order' => [
         array(
             'field' => 'order_id',
             'label' => 'order_id',
@@ -92,7 +92,7 @@ $config = array(
     ],
 
     //提交评论
-    'submit_comment'=>[
+    'submit_comment' => [
         array(
             'field' => 'order_id',
             'label' => 'order_id',
@@ -117,6 +117,43 @@ $config = array(
                 'required' => 'context参数错误'
             ),
         ),
+    ],
+
+    //提交申诉
+    'submit_order_shensu' => [
+        array(
+            'field' => 'order_id',
+            'label' => 'order_id',
+            'rules' => 'integer|required',
+            'errors' => array(
+                'required' => 'order_id参数错误'
+            ),
+        ),
+        array(
+            'field' => 'victory_num',
+            'label' => 'victory_num',
+            'rules' => 'integer|required|in_list[1,2,3]',
+            'errors' => array(
+                'required' => 'victory_num参数错误'
+            ),
+        ),
+        array(
+            'field' => 'record_url',
+            'label' => 'record_url',
+            'rules' => 'trim|required|max_length[255]',
+            'errors' => array(
+                'required' => 'record_url参数错误'
+            ),
+        ),
+        array(
+            'field' => 'shensu_des',
+            'label' => 'shensu_des',
+            'rules' => 'trim|max_length[200]',
+            'errors' => array(
+                'required' => 'shensu_des参数错误'
+            ),
+        ),
     ]
+
 
 );
