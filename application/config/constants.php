@@ -93,8 +93,8 @@ defined('EXIT__AUTO_MAX')      OR define('EXIT__AUTO_MAX', 125); // highest auto
 */
 defined('ORDER_BEGIN_STATUS')        OR define('ORDER_BEGIN_STATUS', 1); //用户下单
 defined('ORDER_CANCER_NO_ACCEPT')    OR define('ORDER_CANCER_NO_ACCEPT', 2); //未接取消
-defined('ORDER_CANCER_ACCEPTED')     OR define('ORDER_CANCER_ACCEPTED', 3); //已接取消
-defined('ORDER_GOD_GRAB')            OR define('ORDER_GOD_GRAB', 4); //大神抢单
+defined('ORDER_GOD_GRAB')            OR define('ORDER_GOD_GRAB', 3); //大神抢单
+defined('ORDER_CANCER_ACCEPTED')     OR define('ORDER_CANCER_ACCEPTED', 4); //已接取消
 defined('ORDER_USER_PREPARE')        OR define('ORDER_USER_PREPARE', 5); //用户准备
 defined('ORDER_COMPLETE_GAME')       OR define('ORDER_COMPLETE_GAME', 6); //完成游戏
 defined('ORDER_GOD_SUB_ORDER')       OR define('ORDER_GOD_SUB_ORDER', 7); //大神提交战绩

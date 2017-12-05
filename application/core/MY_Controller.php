@@ -2281,4 +2281,28 @@ abstract class MY_Controller extends CI_Controller {
         }
         $this->response(['status'=>$status, 'msg'=>$msg, 'data'=>$data], $http_code);
     }
+
+    /**
+     * 根据token获取用户id并验证
+     */
+    protected function getUserId()
+    {
+        $token = $this->input->get_post('token', true);
+        log_message('info', 'getUserId获取到的数据token:' . $token);
+        if (!$token) $this->responseToJson(502, 'token参数缺少');
+
+        //上线开启
+        if (!$this->cache->redis->get($token))
+            $this->responseToJson(501, 'token过期');
+
+        $userInfo = $this->User_Model->getUserbyToken($token);
+        if (!$userInfo || !isset($userInfo['openid']) || !isset($userInfo['id']))
+            $this->responseToJson(501, '该用户还未注册');
+
+        //上线开启
+        if ($this->cache->redis->get($token) != md5($userInfo['openid'] . 'eachfight'))
+            $this->responseToJson(502, 'token验证未通过');
+
+        return $userInfo['id'];
+    }
 }
