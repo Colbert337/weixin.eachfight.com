@@ -48,53 +48,5 @@ class God extends MY_Controller
         }
     }
 
-    /**
-     * 根据大神用户id及订单id获取 获取大神订单状态
-     * @param $user_id
-     * @param $order_id
-     * @return bool|int
-     */
-    public function getGodPlayStatus($user_id, $order_id)
-    {
-        $order = $this->Order_Model->scalar($order_id);
-        $status = $order['status'];
-        switch ($status) {
-            case 1:
-                $play_status = 1;  //等待抢单
-                break;
-
-            case 2:
-            case 4:
-                $play_status = 2;  //订单已取消
-                break;
-
-            case 3:
-                if ($order['god_user_id'] == $user_id) {
-                    $play_status = 3;  //抢单成功待用户准备
-                } else {
-                    $play_status = 4;  //抢单失败
-                }
-                break;
-
-            case 5:
-                $play_status = 5;  //待完成游戏
-                break;
-
-            case 6:
-                $play_status = 6;  //待提交战绩
-                break;
-
-            case 7:
-                $play_status = 7;  //申诉中
-                break;
-
-            case 8:
-                $play_status = 8;  //订单完成
-                break;
-        }
-
-        return $play_status;
-    }
-
 
 }

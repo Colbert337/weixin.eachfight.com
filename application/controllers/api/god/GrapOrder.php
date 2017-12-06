@@ -33,11 +33,7 @@ class GrapOrder extends MY_Controller
         $orderId = $this->input->post('order_id');
         // 判断订单状态，是否可以抢单
         $orderInfo = $this->order->scalar($orderId);
-        if(!empty($orderInfo)){
-            if(!in_array($orderInfo['status'],[ORDER_CANCER_NO_ACCEPT,ORDER_GOD_GRAB])){
-                $this->responseJson(502, '订单已过期');
-            }
-            if(!empty($this->user_id)){
+        if(!empty($orderInfo) && !empty($this->user_id)){
                 // 大神身份验证
                 $godInfo = $this->god->scalarBy(['user_id' => $this->user_id, 'status' => 1]);
                 if(!empty($godInfo)){
@@ -51,36 +47,92 @@ class GrapOrder extends MY_Controller
                             'god_user_id'=>$this->user_id,
                             'grab_time'=>date('Y-m-d H:i:s'),
                         );
-                        $insert_id = $this->order->insert($new_info, true);
-                        if($insert_id){
-                            $log_data = array(
-                                'order_id'=>$orderId,
-                                'begin_status'=>ORDER_CANCER_NO_ACCEPT,
-                                'end_status'=>ORDER_GOD_GRAB,
-                                'remark'=>"大神ID".$this->user_id."抢单",
-                                'create_time'=>date('Y-m-d H:i:s'),
-                            );
-                            if($this->orderlog->insert($log_data, true)){
-                                $return_data['play_status'] = ORDER_GOD_GRAB;
-                                $return_data['user_info'] = $godInfo;
-                                $return_data['god_info'] = $godInfo;
-                                $return_data['order_info'] = $orderInfo;
-                                $this->responseJson(200, '抢单成功', $return_data);
-                            }else{
-                                $this->responseJson(200, '订单日志记录失败');
-                            }
+                        $this->db->trans_begin();
+                        $order_insert_id = $this->order->insert($new_info, true);
+                        $log_data = array(
+                            'order_id'=>$orderId,
+                            'begin_status'=>ORDER_CANCER_NO_ACCEPT,
+                            'end_status'=>ORDER_GOD_GRAB,
+                            'remark'=>"大神ID".$this->user_id."抢单成功",
+                            'create_time'=>date('Y-m-d H:i:s'),
+                        );
+                        $log_insert_id = $this->orderlog->insert($log_data, true);
+                        if($order_insert_id && $log_insert_id){
+                            $this->db->trans_commit();
+                            $return_data['god_id'] = $this->user_id;
+                            $this->responseJson(200, '抢单成功', $return_data);
                         }else{
-                            $this->responseJson(502, '信息写入失败');
+                            $this->db->trans_rollback();
+                            $this->cache->redis->delete(self::GRAP_KEY.$orderId);
+                            $this->responseJson(502, '抢单失败');
                         }
                     }
                 }else{
                     $this->responseJson(502, '只有认证大神才能抢单');
                 }
-            }else{
-                $this->responseJson(502, '抢单大神信息获取失败');
-            }
         }else{
             $this->responseJson(502, '订单不存在');
         }
     }
+
+    /**
+     * 大神订单状态
+     */
+    public function index_get(){
+        // 订单ID
+        $order_id = $this->input->get('order_id');
+        $play_status = $this->getGodPlayStatus($this->user_id, $order_id);
+        // 订单信息
+        $orderData = $this->order->scalar($order_id);
+        // 订单所需要展示的信息
+        if ($order_id) {
+            $orderInfo = array(
+                'game_type'=>$orderData['game_type'],
+                'game_mode'=>$orderData['game_mode'],
+                'game_zone'=>$orderData['game_zone'],
+                'game_num'=>$orderData['game_num'],
+                'order_fee'=>$orderData['order_fee'],
+            );
+            // 如果订单已完成，则追加战绩数据
+            if($play_status == 8){
+                $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $order_id]);
+                $victory_num = $OrderRecord_Model['victory_num'];
+                $orderInfo['order_id'] = $order_id;
+                $orderInfo['victory_num'] = $victory_num;
+            }
+        }
+        //获取用户信息
+        $user_data = $this->User_Model->getUserById($this->user_id);
+        //返回用户信息
+        $user_info = array(
+            'nickname'=>$user_data['nickname'],
+            'headimg_url'=>$user_data['headimg_url'],
+            'mobile'=>$user_data['mobile'],
+            'gender'=>$user_data['gender'],
+            'weixin_url'=>$user_data['weixin_url'],
+        );
+        //存在大神时获取大神信息
+        $god_info = ($order_id && $orderData['god_user_id']) ?
+            $this->getGodInfo($orderData['god_user_id'], $orderData['game_type']) : [];
+        $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
+            'order_info' => $orderInfo];
+
+        $this->responseJson(200, '获取成功', $data);
+    }
+
+    //根据用户id及游戏类型获取大神的信息
+    private function getGodInfo($user_id, $game_type)
+    {
+        $god_info = $this->God_Model->getGodInfo($user_id, $game_type);
+        $user_info = $this->User_Model->getUserById($user_id);
+
+        $result = ['headimg_url' => $user_info['headimg_url'], 'nickname' => emoji_to_string($user_info['nickname']),
+            'gender' => $user_info['gender'], 'mobile' => $user_info['mobile'], 'weixin_url' => $user_info['weixin_url'],
+            'order_num' => $god_info['order_num'], 'comment_score' => $god_info['comment_score']];
+
+        $game_level = $god_info['game_level_id'] ? $this->GameLevel_Model->getGameLevelName($god_info['game_level_id']) : '';
+
+        return array_merge($result, ['game_level' => $game_level->game_level]);
+    }
+
 }

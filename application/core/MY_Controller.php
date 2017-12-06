@@ -2283,26 +2283,50 @@ abstract class MY_Controller extends CI_Controller {
     }
 
     /**
-     * 根据token获取用户id并验证
+     * 根据大神用户id及订单id获取 获取大神订单状态
+     * @param $user_id
+     * @param $order_id
+     * @return bool|int
      */
-    protected function getUserId()
+    public function getGodPlayStatus($user_id, $order_id)
     {
-        $token = $this->input->get_post('token', true);
-        log_message('info', 'getUserId获取到的数据token:' . $token);
-        if (!$token) $this->responseToJson(502, 'token参数缺少');
+        $this->load->model('Order_Model');
+        $order = $this->Order_Model->scalar($order_id);
+        $status = $order['status'];
+        switch ($status) {
+            case 1:
+                $play_status = 1;  //等待抢单
+                break;
+            case 2:
+            case 4:
+                $play_status = 2;  //订单已取消
+                break;
 
-        //上线开启
-        if (!$this->cache->redis->get($token))
-            $this->responseToJson(501, 'token过期');
+            case 3:
+                if ($order['god_user_id'] == $user_id) {
+                    $play_status = 3;  //抢单成功待用户准备
+                } else {
+                    $play_status = 4;  //抢单失败
+                }
+                break;
 
-        $userInfo = $this->User_Model->getUserbyToken($token);
-        if (!$userInfo || !isset($userInfo['openid']) || !isset($userInfo['id']))
-            $this->responseToJson(501, '该用户还未注册');
+            case 5:
+                $play_status = 5;  //待完成游戏
+                break;
 
-        //上线开启
-        if ($this->cache->redis->get($token) != md5($userInfo['openid'] . 'eachfight'))
-            $this->responseToJson(502, 'token验证未通过');
+            case 6:
+                $play_status = 6;  //待提交战绩
+                break;
 
-        return $userInfo['id'];
+            case 7:
+                $play_status = 7;  //申诉中
+                break;
+
+            case 8:
+                $play_status = 8;  //订单完成
+                break;
+        }
+
+        return $play_status;
     }
 }
