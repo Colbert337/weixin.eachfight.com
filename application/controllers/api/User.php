@@ -14,6 +14,7 @@ class User extends CI_Controller
         $this->load->model('OrderRecord_Model');
         $this->load->model('UserCashJournal_Model');
         $this->load->model('OrderComment_Model');
+        $this->load->model('OrderShensu_Model');
 
         $this->load->library('form_validation');
         $this->load->helper('used_helper');
@@ -281,6 +282,44 @@ class User extends CI_Controller
                 throw new \Exception('提交评论异常');
             }
         } catch (\Exception $exception) {
+            $this->responseToJson(502, $exception->getMessage());
+        }
+    }
+
+    //提交订单申诉
+    public function sumbitOrderShensu()
+    {
+        $user_id = $this->user_id;
+        $params = $this->input->post();
+        //参数校验
+        $this->form_validation->set_data($params);
+        if ($this->form_validation->run('submit_order_shensu') == false) {
+            $errors = array_values($this->form_validation->error_array());
+            $this->responseToJson(502, array_shift($errors));
+        }
+        $order_id = $params['order_id'];
+        $order = $this->Order_Model->scalarBy(['id' => $order_id]);
+        if ($order['user_id'] != $user_id) $this->responseToJson(502, '非该用户下的订单');
+        if ($order['status'] != 7) $this->responseToJson(502, '订单状态异常');
+        if ($order['is_shensu']) $this->responseToJson(502, '该订单已申诉');
+
+        $this->db->trans_begin();
+        try {
+            $result_1 = $this->OrderShensu_Model->insert(['order_id' => $order_id, 'record_url' => $params['record_url'],
+                'victory_num' => $params['victory_num'], 'shensu_des' => htmlspecialchars($params['shensu_des']),
+                'create_time' => date('Y-m-d H:i:s')]);
+
+            $result_2 = $this->Order_Model->update(['id' => $order_id], ['status'=>8,'is_shensu' => 1, 'update_time' => date('Y-m-d H:i:s')]);
+            if ($result_1 && $result_2) {
+                $this->db->trans_commit();
+                $this->responseToJson(200, '申诉提交成功,等待后续处理结果');
+            } else {
+                $this->db->trans_rollback();
+                throw new \Exception('提交申诉异常');
+            }
+
+        } catch (\Exception $exception) {
+            $this->db->trans_rollback();
             $this->responseToJson(502, $exception->getMessage());
         }
     }
