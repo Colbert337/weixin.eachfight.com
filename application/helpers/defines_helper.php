@@ -51,8 +51,8 @@ if (!function_exists('god_status')) {
 }
 
 //大神申请审核状态
-if (!function_exists('status')) {
-    function status()
+if (!function_exists('god_apply_status')) {
+    function god_apply_status()
     {
         return array(1 => '待审 ', 2 => '通过', 3 => '拒绝');
     }

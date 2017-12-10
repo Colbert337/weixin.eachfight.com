@@ -38,7 +38,7 @@ $this->load->view('admin/template/header');
 	            ?>
 				<tr class="text-c">
 					<td><?php echo $row['nickname']?></td>
-					<td><?php echo status()[$row['status']]; ?></td>
+					<td><?php echo god_apply_status()[$row['status']]; ?></td>
 					<td>
 						<?php echo game_type()[$row['game_type']]; ?>
 					</td>
