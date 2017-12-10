@@ -81,9 +81,9 @@ class GrapOrder extends MY_Controller
     public function index_get(){
         // 订单ID
         $order_id = $this->input->get('order_id');
-        $play_status = $this->getGodPlayStatus($this->user_id, $order_id);
         // 订单信息
         $orderData = $this->order->scalar($order_id);
+        $play_status = $this->getGodPlayStatus($this->user_id, $orderData['god_user_id'], $orderData['status']);
         // 订单所需要展示的信息
         if ($order_id) {
             $orderInfo = array(
@@ -95,7 +95,6 @@ class GrapOrder extends MY_Controller
                 'game_level_id'=>$orderData['game_level_id'],
                 'remark'=>$orderData['remark'],
                 'device'=>$orderData['device'],
-
             );
             // 如果订单已完成，则追加战绩数据
             if($play_status == 8){
@@ -137,6 +136,51 @@ class GrapOrder extends MY_Controller
         $game_level = $god_info['game_level_id'] ? $this->GameLevel_Model->getGameLevelName($god_info['game_level_id']) : '';
 
         return array_merge($result, ['game_level' => $game_level->game_level]);
+    }
+
+    /**
+     * 根据大神用户id及订单id获取 获取大神订单状态
+     * @param $user_id
+     * @param $order_id
+     * @return bool|int
+     */
+    private function getGodPlayStatus($user_id, $god_user_id, $status)
+    {
+        switch ($status) {
+            case 1:
+                $play_status = 1;  //等待抢单
+                break;
+            case 2:
+            case 4:
+                $play_status = 2;  //订单已取消
+                break;
+
+            case 3:
+                if ( $god_user_id == $user_id) {
+                    $play_status = 3;  //抢单成功待用户准备
+                } else {
+                    $play_status = 4;  //抢单失败
+                }
+                break;
+
+            case 5:
+                $play_status = 5;  //待完成游戏
+                break;
+
+            case 6:
+                $play_status = 6;  //待提交战绩
+                break;
+
+            case 7:
+                $play_status = 7;  //申诉中
+                break;
+
+            case 8:
+                $play_status = 8;  //订单完成
+                break;
+        }
+
+        return $play_status;
     }
 
 }
