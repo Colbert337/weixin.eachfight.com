@@ -41,6 +41,21 @@ class Weixin extends CI_Controller
         redirect(urldecode($this->input->get('state')));
     }
 
+    /**
+     * 获取wx.config
+     */
+    public function getWxConfig()
+    {
+        try {
+            $js = $this->wechat->js->config(
+                ['jsApiList' => ['onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone']],
+                true, false, false);
+            $this->responseToJson(200, '获取成功', $js);
+        } catch (\Exception $exception) {
+            $this->responseToJson(500, $exception->getMessage());
+        }
+    }
+
 
     /**
      * 前端给code 授权获取用户访问随机token  注册入库
