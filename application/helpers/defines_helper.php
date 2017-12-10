@@ -50,6 +50,14 @@ if (!function_exists('god_status')) {
     }
 }
 
+//大神申请审核状态
+if (!function_exists('god_apply_status')) {
+    function god_apply_status()
+    {
+        return array(1 => '待审 ', 2 => '通过', 3 => '拒绝');
+    }
+}
+
 /**************订单相关**********************/
 //游戏类型
 if (!function_exists('game_type')) {
