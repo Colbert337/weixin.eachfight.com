@@ -15,21 +15,22 @@ class Order extends CI_Controller {
 
 	public function index()
 	{
-		$where=[];
-		$order=$this->Order_Model->fetchAll($where);
-		foreach ($order as $key => $value) {
-			//查出订单用户
-			$userid=$value['user_id'];
-			$user=$this->User_Model->scalar($userid);
-			$order[$key]['username']=$user['nickname'];
+		echo "111";exit;
+		// $where=[];
+		// $order=$this->Order_Model->fetchAll($where);
+		// foreach ($order as $key => $value) {
+		// 	//查出订单用户
+		// 	$userid=$value['user_id'];
+		// 	$user=$this->User_Model->scalar($userid);
+		// 	$order[$key]['username']=$user['nickname'];
 
-			//查出大神用户
-			$goduserid=$value['user_id'];
-			$goduser=$this->User_Model->scalar($goduserid);
-			$order[$key]['godusername']=$user['nickname'];
-		}
-		$data['count'] = count($order);
-		$data['order']=$order;
-		$this->load->view('admin/order/index',$data);
+		// 	//查出大神用户
+		// 	$goduserid=$value['user_id'];
+		// 	$goduser=$this->User_Model->scalar($goduserid);
+		// 	$order[$key]['godusername']=$user['nickname'];
+		// }
+		// $data['count'] = count($order);
+		// $data['order']=$order;
+		// $this->load->view('admin/order/index',$data);
 	}
 }
