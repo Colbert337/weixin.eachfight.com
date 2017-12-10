@@ -16,6 +16,8 @@ class God extends MY_Controller
         parent::__construct();
         $this->load->model('God_Model', 'god');
         $this->load->model('User_Model', 'user');
+        //获取用户uid
+        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -23,13 +25,11 @@ class God extends MY_Controller
      */
     public function index_get()
     {
-
-        $openid = $this->input->get_request_header('openid', TRUE);
-        if (!empty($openid)) {
+        if (!empty($this->user_id)) {
             // 根据openid获取用户ID
-            $userInfo = $this->user->scalarBy(['openid' => $openid, 'is_god' => 2, 'status' => 1]);
+            $userInfo = $this->user->scalar($this->user_id);
             if (!empty($userInfo)) {
-                $godInfo = $this->god->scalarBy(['user_id' => $userInfo['id'], 'status' => 1]);
+                $godInfo = $this->god->scalarBy(['user_id' => $this->user_id, 'status' => 1]);
                 if (!empty($godInfo)) {
                     $data = $godInfo + $userInfo;
                     $data['game_type'] = game_type()[$data['game_type']];

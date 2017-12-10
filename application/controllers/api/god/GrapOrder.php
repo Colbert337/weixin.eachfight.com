@@ -81,43 +81,51 @@ class GrapOrder extends MY_Controller
     public function index_get(){
         // 订单ID
         $order_id = $this->input->get('order_id');
-        $play_status = $this->getGodPlayStatus($this->user_id, $order_id);
         // 订单信息
         $orderData = $this->order->scalar($order_id);
-        // 订单所需要展示的信息
-        if ($order_id) {
-            $orderInfo = array(
-                'game_type'=>$orderData['game_type'],
-                'game_mode'=>$orderData['game_mode'],
-                'game_zone'=>$orderData['game_zone'],
-                'game_num'=>$orderData['game_num'],
-                'order_fee'=>$orderData['order_fee'],
-            );
-            // 如果订单已完成，则追加战绩数据
-            if($play_status == 8){
-                $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $order_id]);
-                $victory_num = $OrderRecord_Model['victory_num'];
-                $orderInfo['order_id'] = $order_id;
-                $orderInfo['victory_num'] = $victory_num;
+        if(!empty($orderInfo)){
+            $play_status = $this->getGodPlayStatus($this->user_id, $orderData['god_user_id'], $orderData['status']);
+            // 订单所需要展示的信息
+            if ($order_id) {
+                $orderInfo = array(
+                    'game_type'=>$orderData['game_type'],
+                    'game_mode'=>$orderData['game_mode'],
+                    'game_zone'=>$orderData['game_zone'],
+                    'game_num'=>$orderData['game_num'],
+                    'order_fee'=>$orderData['order_fee'],
+                    'game_level_id'=>$orderData['game_level_id'],
+                    'remark'=>$orderData['remark'],
+                    'device'=>$orderData['device'],
+                );
+                // 如果订单已完成，则追加战绩数据
+                if($play_status == 8){
+                    $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $order_id]);
+                    $victory_num = $OrderRecord_Model['victory_num'];
+                    $orderInfo['order_id'] = $order_id;
+                    $orderInfo['victory_num'] = $victory_num;
+                }
             }
-        }
-        //获取用户信息
-        $user_data = $this->User_Model->getUserById($this->user_id);
-        //返回用户信息
-        $user_info = array(
-            'nickname'=>$user_data['nickname'],
-            'headimg_url'=>$user_data['headimg_url'],
-            'mobile'=>$user_data['mobile'],
-            'gender'=>$user_data['gender'],
-            'weixin_url'=>$user_data['weixin_url'],
-        );
-        //存在大神时获取大神信息
-        $god_info = ($order_id && $orderData['god_user_id']) ?
-            $this->getGodInfo($orderData['god_user_id'], $orderData['game_type']) : [];
-        $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
-            'order_info' => $orderInfo];
+            //获取用户信息
+            $user_data = $this->User_Model->getUserById($this->user_id);
+            //返回用户信息
+            $user_info = array(
+                'nickname'=>$user_data['nickname'],
+                'headimg_url'=>$user_data['headimg_url'],
+                'mobile'=>$user_data['mobile'],
+                'gender'=>$user_data['gender'],
+                'weixin_url'=>$user_data['weixin_url'],
+            );
+            //存在大神时获取大神信息
+            $god_info = ($order_id && $orderData['god_user_id']) ?
+                $this->getGodInfo($orderData['god_user_id'], $orderData['game_type']) : [];
+            $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
+                'order_info' => $orderInfo];
 
-        $this->responseJson(200, '获取成功', $data);
+            $this->responseJson(200, '获取成功', $data);
+        }else{
+            $this->responseJson(502, '该订单不存在');
+        }
+
     }
 
     //根据用户id及游戏类型获取大神的信息
@@ -133,6 +141,51 @@ class GrapOrder extends MY_Controller
         $game_level = $god_info['game_level_id'] ? $this->GameLevel_Model->getGameLevelName($god_info['game_level_id']) : '';
 
         return array_merge($result, ['game_level' => $game_level->game_level]);
+    }
+
+    /**
+     * 根据大神用户id及订单id获取 获取大神订单状态
+     * @param $user_id
+     * @param $order_id
+     * @return bool|int
+     */
+    private function getGodPlayStatus($user_id, $god_user_id, $status)
+    {
+        switch ($status) {
+            case 1:
+                $play_status = 1;  //等待抢单
+                break;
+            case 2:
+            case 4:
+                $play_status = 2;  //订单已取消
+                break;
+
+            case 3:
+                if ( $god_user_id == $user_id) {
+                    $play_status = 3;  //抢单成功待用户准备
+                } else {
+                    $play_status = 4;  //抢单失败
+                }
+                break;
+
+            case 5:
+                $play_status = 5;  //待完成游戏
+                break;
+
+            case 6:
+                $play_status = 6;  //待提交战绩
+                break;
+
+            case 7:
+                $play_status = 7;  //申诉中
+                break;
+
+            case 8:
+                $play_status = 8;  //订单完成
+                break;
+        }
+
+        return $play_status;
     }
 
 }

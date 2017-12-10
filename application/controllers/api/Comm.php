@@ -178,7 +178,7 @@ class Comm extends CI_Controller
     /**
      * 该方法实现从微信服务器拉取临时上传素材到本服务器
      */
-    public function getServerPicPath(){
+    public function getQiniuUrl(){
         $serverId = $this->input->post('serverId');
         if(!empty($serverId)){
             $config = [
@@ -201,7 +201,7 @@ class Comm extends CI_Controller
             // 要上传的空间
             $bucket = config_item('qiniu.bucket');
             // 上传到七牛后保存的文件名
-            $key = date("Ymd")."/".$picpath.".png";
+            $key = date("Ymd")."/".$serverId.".png";
             // 生成上传 Token
             $policy = array(
                 'scope'=>$bucket.":".$key,
@@ -218,7 +218,8 @@ class Comm extends CI_Controller
             if ($err !== null) {
                 var_dump($err);
             } else {
-                var_dump($ret);
+                $qiniuUrl = config_item('photo.domain')."/".$bucket."/".$key;
+                $this->responseToJson(200, "上传成功",['picUrl'=>$qiniuUrl]);
             }
         }else{
             $this->responseToJson(502, "serverId为空");
