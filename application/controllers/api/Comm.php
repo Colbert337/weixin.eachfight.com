@@ -219,7 +219,7 @@ class Comm extends CI_Controller
                 var_dump($err);
             } else {
                 $qiniuUrl = config_item('photo.domain')."/".$bucket."/".$key;
-                $this->responseToJson(502, $qiniuUrl);
+                $this->responseToJson(200, $qiniuUrl);
             }
         }else{
             $this->responseToJson(502, "serverId为空");

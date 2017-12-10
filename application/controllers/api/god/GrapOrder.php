@@ -92,6 +92,10 @@ class GrapOrder extends MY_Controller
                 'game_zone'=>$orderData['game_zone'],
                 'game_num'=>$orderData['game_num'],
                 'order_fee'=>$orderData['order_fee'],
+                'game_level_id'=>$orderData['game_level_id'],
+                'remark'=>$orderData['remark'],
+                'device'=>$orderData['device'],
+
             );
             // 如果订单已完成，则追加战绩数据
             if($play_status == 8){
