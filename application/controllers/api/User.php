@@ -380,7 +380,7 @@ class User extends CI_Controller
     {
         $notice = $this->wechat->notice;
         $templateId = 'A4XHF6abZqWpDg6f0lLvpJceFQ7Fb0GwnWVpptNfdm4';
-        $url = 'http://weixin.eachfight.com/#/mantio?order_id=' . $order_id;  //大神端入口地址
+        $url = 'http://weixin.eachfight.com/#/mantio/' . $order_id;  //大神端入口地址
         $data = array(
             "first" => "收到一笔新的陪练需求",
             "keyword1" => time(),
