@@ -83,7 +83,7 @@ class GrapOrder extends MY_Controller
         $order_id = $this->input->get('order_id');
         // 订单信息
         $orderData = $this->order->scalar($order_id);
-        if(!empty($orderInfo)){
+        if(!empty($orderData)){
             $play_status = $this->getGodPlayStatus($this->user_id, $orderData['god_user_id'], $orderData['status']);
             // 订单所需要展示的信息
             if ($order_id) {
