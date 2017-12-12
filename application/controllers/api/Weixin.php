@@ -47,7 +47,9 @@ class Weixin extends CI_Controller
     public function getWxConfig()
     {
         try {
-            $js = $this->wechat->js->config(['onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone'],
+            $js = $this->wechat->js->config(
+                ['onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone','chooseWXPay','chooseImage',
+                    'previewImage','uploadImage','downloadImage','getLocalImgData','getNetworkType'],
                 true, false, false);
             $this->responseToJson(200, '获取成功', $js);
         } catch (\Exception $exception) {
