@@ -47,9 +47,7 @@ class Weixin extends CI_Controller
     public function getWxConfig()
     {
         try {
-
             $url = $this->input->post('url', true);
-            $url = 'http://weixin.eachfight.com/';
             $jssdk = $this->wechat->js;
             $jssdk->setUrl($url);
             $data = $jssdk->config(
