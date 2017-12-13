@@ -46,10 +46,11 @@ class Weixin extends CI_Controller
      */
     public function getWxConfig()
     {
+        $url = $this->input->post('url');
+        if(!$url) $this->responseToJson(500, 'url参数缺少');
+        log_message('info', 'getWxConfig获取到的url:' . $url);
+
         try {
-            $url = $this->input->post('url');
-            if(!$url) $this->responseToJson(500, 'url参数缺少');
-            log_message('info', 'getWxConfig获取到的url:' . $url);
             $jssdk = $this->wechat->js;
             $jssdk->setUrl($url);
             $data = $jssdk->config(
