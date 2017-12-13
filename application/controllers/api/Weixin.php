@@ -47,7 +47,7 @@ class Weixin extends CI_Controller
     public function getWxConfig()
     {
         $url = $this->input->post('url');
-        if(!$url) $this->responseToJson(500, 'url参数缺少');
+        if(!$url) $this->responseToJson(502, 'url参数缺少');
         log_message('info', 'getWxConfig获取到的url:' . $url);
 
         try {
@@ -59,7 +59,7 @@ class Weixin extends CI_Controller
                 true, false, false);
             $this->responseToJson(200, '获取成功', $data);
         } catch (\Exception $exception) {
-            $this->responseToJson(500, $exception->getMessage());
+            $this->responseToJson(502, $exception->getMessage());
         }
     }
 
