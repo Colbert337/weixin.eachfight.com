@@ -46,13 +46,21 @@ class Weixin extends CI_Controller
      */
     public function getWxConfig()
     {
+        $url = $this->input->get('url');
+        $url = urldecode($url);
+        if(!$url) $this->responseToJson(502, 'url参数缺少');
+        log_message('info', 'getWxConfig获取到的url:' . $url);
+
         try {
-            $js = $this->wechat->js->config(
-                ['jsApiList' => ['onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone']],
+            $jssdk = $this->wechat->js;
+            $jssdk->setUrl($url);
+            $data = $jssdk->config(
+                ['onMenuShareQQ', 'onMenuShareWeibo', 'onMenuShareQZone','chooseWXPay','chooseImage',
+                    'previewImage','uploadImage','downloadImage','getLocalImgData','getNetworkType'],
                 true, false, false);
-            $this->responseToJson(200, '获取成功', $js);
+            $this->responseToJson(200, '获取成功', $data);
         } catch (\Exception $exception) {
-            $this->responseToJson(500, $exception->getMessage());
+            $this->responseToJson(502, $exception->getMessage());
         }
     }
 

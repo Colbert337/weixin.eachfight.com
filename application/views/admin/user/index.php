@@ -1,7 +1,7 @@
 <?php 
 $this->load->view('admin/template/header');
 ?>
-<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 订单管理 <span class="c-gray en">&gt;</span> 订单信息 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
+<nav class="breadcrumb"><i class="Hui-iconfont">&#xe67f;</i> 首页 <span class="c-gray en">&gt;</span> 用户管理 <span class="c-gray en">&gt;</span> 用户信息 <a class="btn btn-success radius r" style="line-height:1.6em;margin-top:3px" href="javascript:location.replace(location.href);" title="刷新" ><i class="Hui-iconfont">&#xe68f;</i></a></nav>
 <div class="page-container">
 	<div class="text-c">
 		<form action='__SELF__' method='get'>
@@ -20,18 +20,16 @@ $this->load->view('admin/template/header');
 		<table class="table table-border table-bordered table-bg table-hover table-sort">
 			<thead>
 				<tr class="text-c">
-					<th>订单状态</th>
 					<th>用户昵称</th>
-					<th>大神昵称</th>
-					<th>游戏类型</th>
-					<th>游戏模式</th>
-					<th>游戏大区</th>
-					<th>游戏段位</th>
-					<th>每局价格</th>
-					<th>游戏局数</th>
-					<th>订单金额</th>
-					<th>下单时间</th>
-					<th>抢单时间</th>
+					<th>性别</th>
+					<th>手机号</th>
+					<th>是否大神</th>
+					<th>账号状态</th>
+					<th>账户可用余额</th>
+					<th>账户冻结余额</th>
+					<th>可提现额度</th>
+					<th>注册时间</th>
+					<th>更新时间</th>
 					<th>操作</th>
 				</tr>
 			</thead>
@@ -41,26 +39,16 @@ $this->load->view('admin/template/header');
 	                foreach( $list as $key=>$row):
 	            ?>
 				<tr class="text-c">
-					<td>
-						<?php echo order_status()[$row['status']]; ?>
-					</td>
-					<td><?php echo $row['username']?></td>
+					<td><?php echo $row['nickname']?></td>
+					<td><?php echo $row['mobile']?></td>
 					<td><?php echo $row['godusername']?></td>
-					<td>
-						<?php echo order_status()[$row['game_type']]; ?>
-					</td>
-					<td>
-						<?php echo order_status()[$row['game_mode']]; ?>
-					</td>
-					<td>
-						<?php echo order_status()[$row['game_zone']]; ?>
-					</td>
+					<td></td>
+					<td></td>
+					<td></td>
 					<td>白银</td>
 					<td><?php echo $row['one_price']?></td>
 					<td><?php echo $row['game_num']?></td>
 					<td><?php echo $row['order_fee']?></td>
-					<td><?php echo $row['create_time']?></td>
-					<td><?php echo $row['grab_time']?></td>
 					<td class="f-14 td-manage">
 						<a style="text-decoration:none" class="ml-5" onClick='toview("查看","{:U("News/toview")}?id={$row.id}")' href="javascript:;" title="查看"><i class="Hui-iconfont">&#xe665;</i></a> 
 						<a style="text-decoration:none" class="ml-5" onClick='news_edit("修改信息","{:U("News/news_edit")}?id={$row.id}")' href="javascript:;" title="修改信息"><i class="Hui-iconfont">&#xe6df;</i></a> 
