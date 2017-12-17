@@ -127,8 +127,8 @@ class User extends CI_Controller
             $order_info = game_type()[$params['game_type']] . '|' . game_mode()[$params['game_mode']] . '|'
                 . device()[$params['device']] . game_zone()[$params['game_zone']]
                 . '|' . $game_level . '|' . $params['game_num'] . '局';
-            //发消息
-            $god_openids = ['o05NB0336D8kxENuVmtjvAaJrB8E','o05NB0w96SrxDgpS6ZzOapUNq1WY', 'o05NB08e8bdzMV7Kc6Nj3-0zwYaU', 'o05NB0xCHKaf1j1hqnSJzA7NMBD4'];
+            //给满足条件的大神推送新订单消息
+            $god_openids = $this->getSendNoticeGods($params);
             $this->sendNotice($god_openids, $order_fee, $order_info, $insert_id);
             $this->responseToJson(200, '下单成功');
         } else {
@@ -309,7 +309,7 @@ class User extends CI_Controller
                 'victory_num' => $params['victory_num'], 'shensu_des' => htmlspecialchars($params['shensu_des']),
                 'create_time' => date('Y-m-d H:i:s')]);
 
-            $result_2 = $this->Order_Model->update(['id' => $order_id], ['status'=>8,'is_shensu' => 1, 'update_time' => date('Y-m-d H:i:s')]);
+            $result_2 = $this->Order_Model->update(['id' => $order_id], ['status' => 8, 'is_shensu' => 1, 'update_time' => date('Y-m-d H:i:s')]);
             if ($result_1 && $result_2) {
                 $this->db->trans_commit();
                 $this->responseToJson(200, '申诉提交成功,等待后续处理结果');
@@ -375,6 +375,36 @@ class User extends CI_Controller
         return array_merge($result, ['game_level' => $game_level->game_level ?? null]);
     }
 
+    //获取满足订单条件的大神openid
+    public function getSendNoticeGods(array $params)
+    {
+        $game_level_id = $params['game_level_id']; //游戏段位
+        $game_type = $params['game_type']; //游戏类型  1=>王者荣耀   2=>英雄联盟
+        $can_zone = $params['game_zone']; //可接大区   1=>不限  2=>微信区   3=>QQ区
+        $can_device = $params['device']; //可接设备系统  1=>不限  2=>IOS  3=>安卓
+        $user_id = $this->user_id;
+        //排除自己
+        $sql = "SELECT user_id FROM t_god WHERE status = ? AND user_id != ? AND game_level_id >= ? AND
+        game_type = ? AND can_zone IN ? AND can_device IN ?";
+        $query = $this->db->query($sql,
+            array('1', $user_id, $game_level_id, $game_type, array(1, $can_zone), [1, $can_device]));
+        $gods = $query->result_array();
+
+        $data = [];
+        foreach ($gods as $val) {
+            //排除游戏中的大神
+            $play_status = [3, 5, 6, 7, 8];
+            $oneGodOrder = $this->Order_Model->getGodOrder($val['user_id']);
+            if (!$oneGodOrder || !in_array($oneGodOrder->status, $play_status)) {
+                $user = $this->User_Model->getUserById($val['user_id']);
+                if (!isset($user['openid'])) continue;
+                $data[] = $user['openid'];
+            }
+        }
+
+        return $data;
+    }
+
     //给大神推送模板消息
     private function sendNotice($god_openids, $order_fee, $order_info, $order_id)
     {
@@ -388,9 +418,12 @@ class User extends CI_Controller
             "keyword3" => $order_info
         );
 
-        foreach ($god_openids as $val) {
-            $result = $notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($val)->send();
-            log_message('info', '给大神推送模板消息opendid:' . $val . '--' . json_encode($result));
+        $weixin_user = $this->wechat->user->batchGet($god_openids)->toArray();
+        foreach ($weixin_user['user_info_list'] as $val){
+            if($val['subscribe'] == 0) continue;
+            $result = $notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($val['openid'])->send();
+            log_message('info', '给大神推送模板消息opendid:' . $val['openid'] . '--' . json_encode($result));
         }
+
     }
 }

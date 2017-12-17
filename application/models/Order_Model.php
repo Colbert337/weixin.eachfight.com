@@ -46,5 +46,18 @@ class Order_Model extends MY_Model
             ->row();
     }
 
-
+    /**
+     * 根据大神用户id获取大神当前的订单
+     * @param int $god_user_id
+     * @return mixed
+     */
+    public function getGodOrder(int $god_user_id)
+    {
+        return $this->db->select('*')
+            ->from(self::TBL)
+            ->where("god_user_id", $god_user_id)
+            ->order_by('create_time', 'desc')
+            ->get()
+            ->row();
+    }
 }
