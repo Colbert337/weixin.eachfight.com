@@ -85,7 +85,6 @@ class Comm extends CI_Controller
         if (!$money || !is_numeric($money) || strstr($money, '.'))
             $this->responseToJson(502, '金额错误');
 
-        $money = 1;
         $user_data = $this->User_Model->getUserById($user_id);
         if (!isset($user_data['openid']) || !$user_data['openid'])
             $this->responseToJson(502, '该用户还未注册');
