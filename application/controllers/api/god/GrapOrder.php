@@ -15,6 +15,8 @@ class GrapOrder extends MY_Controller
     {
         // Construct the parent class
         parent::__construct();
+        $this->load->model('OrderRecord_Model');
+        $this->load->model('GameLevel_Model');
         $this->load->model('God_Model', 'god');
         $this->load->model('User_Model', 'user');
         $this->load->model('Order_Model', 'order');
@@ -107,7 +109,7 @@ class GrapOrder extends MY_Controller
                 }
             }
             //获取用户信息
-            $user_data = $this->User_Model->getUserById($this->user_id);
+            $user_data = $this->user->getUserById($this->user_id);
             //返回用户信息
             $user_info = array(
                 'nickname'=>emoji_to_string($user_data['nickname']),
@@ -132,8 +134,8 @@ class GrapOrder extends MY_Controller
     //根据用户id及游戏类型获取大神的信息
     private function getGodInfo($user_id, $game_type)
     {
-        $god_info = $this->God_Model->getGodInfo($user_id, $game_type);
-        $user_info = $this->User_Model->getUserById($user_id);
+        $god_info = $this->god->getGodInfo($user_id, $game_type);
+        $user_info = $this->user->getUserById($user_id);
 
         $result = ['headimg_url' => $user_info['headimg_url'], 'nickname' => emoji_to_string($user_info['nickname']),
             'gender' => $user_info['gender'], 'mobile' => $user_info['mobile'], 'weixin_url' => $user_info['weixin_url'],
