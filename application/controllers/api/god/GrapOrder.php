@@ -19,6 +19,7 @@ class GrapOrder extends MY_Controller
         $this->load->model('User_Model', 'user');
         $this->load->model('Order_Model', 'order');
         $this->load->model('OrderLog_Model', 'orderlog');
+        $this->load->helper('used_helper');
 
         //获取用户uid
         $this->user_id = $this->getUserId();
