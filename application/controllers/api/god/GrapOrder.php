@@ -49,7 +49,7 @@ class GrapOrder extends MY_Controller
                             'grab_time'=>date('Y-m-d H:i:s'),
                         );
                         $this->db->trans_begin();
-                        $order_insert_id = $this->order->insert($new_info, true);
+                        $order_insert_id = $this->order->update(['id'=>$orderId],$new_info);
                         $log_data = array(
                             'order_id'=>$orderId,
                             'begin_status'=>ORDER_CANCER_NO_ACCEPT,
