@@ -128,7 +128,7 @@ class User extends CI_Controller
                 . device()[$params['device']] . game_zone()[$params['game_zone']]
                 . '|' . $game_level . '|' . $params['game_num'] . '局';
             //发消息
-            $god_openids = ['o05NB0w96SrxDgpS6ZzOapUNq1WY', 'o05NB08e8bdzMV7Kc6Nj3-0zwYaU', 'o05NB0xCHKaf1j1hqnSJzA7NMBD4'];
+            $god_openids = ['o05NB0336D8kxENuVmtjvAaJrB8E','o05NB0w96SrxDgpS6ZzOapUNq1WY', 'o05NB08e8bdzMV7Kc6Nj3-0zwYaU', 'o05NB0xCHKaf1j1hqnSJzA7NMBD4'];
             $this->sendNotice($god_openids, $order_fee, $order_info, $insert_id);
             $this->responseToJson(200, '下单成功');
         } else {
