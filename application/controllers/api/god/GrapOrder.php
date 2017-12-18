@@ -109,7 +109,7 @@ class GrapOrder extends MY_Controller
                 }
             }
             //获取用户信息
-            $user_data = $this->user->getUserById($this->user_id);
+            $user_data = $this->user->getUserById($orderData['user_id']);
             //返回用户信息
             $user_info = array(
                 'nickname'=>emoji_to_string($user_data['nickname']),
