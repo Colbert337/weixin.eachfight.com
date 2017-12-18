@@ -62,5 +62,4 @@ class God_Model extends MY_Model
         return $this->db->affected_rows();
     }
 
-
 }
