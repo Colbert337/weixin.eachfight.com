@@ -63,6 +63,10 @@ class GodBattleRecord extends MY_Controller
         if($orderInfo['god_user_id'] != $this->user_id){
             $this->responseJson(401, '无权限对此订单提交战绩');
         }
+        // 提交局数不能大于订单局数
+        if($post['victory_num'] > $orderInfo['game_num']){
+            $this->responseJson(401, "胜利局数不能大于订单局数");
+        }
         $dataField = ['order_id'=>'订单ID', 'victory_num'=>'胜利局数'];
         $data = [];
         foreach ($dataField as $key=>$val) {
