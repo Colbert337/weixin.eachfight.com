@@ -71,9 +71,17 @@ class GodBattleRecord extends MY_Controller
             }
         }
         // 提交数据
-        $bool = $this->orderRecord->submitOrderRecord($data);
-        if ($bool) $flag = true;
-        $flag ? $this->responseJson(200, '数据写入成功', $data) : $this->responseJson(200, '数据写入失败');
+        $data['create_time'] = date("Y-m-d H:i:s",time());
+        $id = $this->orderRecord->insert($data,true);
+        if($id){
+            // 变更订单表状态
+            $order = array('status' => ORDER_GOD_SUB_ORDER, 'sumbit_time' => $data['create_time']);
+            $this->order->update(["id"=>$post['order_id']],$order);
+            $return = $data+$order;
+            $this->responseJson(200, '数据写入成功', $return);
+        }else{
+            $this->responseJson(200, '数据写入失败');
+        }
     }
 
     /**
