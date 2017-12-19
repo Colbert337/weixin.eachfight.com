@@ -15,6 +15,9 @@ class GodBattleRecord extends MY_Controller
         // Construct the parent class
         parent::__construct();
         $this->load->model('OrderRecord_Model', 'orderRecord');
+        $this->load->model('Order_Model', 'order');
+        //获取用户uid
+        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -52,7 +55,13 @@ class GodBattleRecord extends MY_Controller
         }
         // 是否订单是否存在
         if(!$this->orderRecord->checkOrder($post['order_id'])){
+//            pp($this->db->last_query());exit();
             $this->responseJson(401, '该订单不存在');
+        }
+        // 判断提交资格
+        $orderInfo = $this->order->scalar($post['order_id']);
+        if($orderInfo['god_user_id'] != $this->user_id){
+            $this->responseJson(401, '无权限对此订单提交战绩');
         }
         $dataField = ['order_id'=>'订单ID', 'victory_num'=>'胜利局数'];
         $data = [];

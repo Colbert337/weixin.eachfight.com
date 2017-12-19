@@ -172,19 +172,22 @@ class GrapOrder extends MY_Controller
                 break;
 
             case 5:
-                $play_status = 5;  //待完成游戏
+                $play_status = 5;  //正在游戏中，待完成游戏
                 break;
 
             case 6:
-                $play_status = 6;  //待提交战绩
+                $play_status = 6;  //已完成游戏，待提交战绩
                 break;
 
             case 7:
-                $play_status = 7;  //申诉中
+                $play_status = 7;  //已提交战绩,待完成待定
                 break;
 
             case 8:
-                $play_status = 8;  //订单完成
+                $play_status = 8;  //用户发起申诉，待完成订单
+                break;
+            case 9:
+                $play_status = 9;  //订单完成
                 break;
         }
 
