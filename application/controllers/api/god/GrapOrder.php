@@ -154,41 +154,18 @@ class GrapOrder extends MY_Controller
      */
     private function getGodPlayStatus($user_id, $god_user_id, $status)
     {
-        switch ($status) {
-            case 1:
-                $play_status = 1;  //等待抢单
-                break;
-            case 2:
-            case 4:
-                $play_status = 2;  //订单已取消
-                break;
-
-            case 3:
-                if ( $god_user_id == $user_id) {
-                    $play_status = 3;  //抢单成功待用户准备
-                } else {
-                    $play_status = 4;  //抢单失败
-                }
-                break;
-
-            case 5:
-                $play_status = 5;  //正在游戏中，待完成游戏
-                break;
-
-            case 6:
-                $play_status = 6;  //已完成游戏，待提交战绩
-                break;
-
-            case 7:
-                $play_status = 7;  //已提交战绩,待完成待定
-                break;
-
-            case 8:
-                $play_status = 8;  //用户发起申诉，待完成订单
-                break;
-            case 9:
-                $play_status = 9;  //订单完成
-                break;
+        //1=>等待抢单 2=>订单已取消 3=>抢单成功待用户准备  4=>已被抢  5=>正在游戏中，待完成游戏
+        // 6=>已完成游戏，待提交战绩 7=>已提交战绩,待完成待定  8=>用户发起申诉，待完成订单 9=>订单完成
+        if($status == 1){
+            $play_status = 1;   //等待抢单
+        }elseif ($status == 2 || $status == 4){
+            $play_status = 2;   //订单已取消
+        }else{
+            if ( $god_user_id == $user_id) {
+                $play_status = $status;
+            } else {
+                $play_status = 4;  //已被抢
+            }
         }
 
         return $play_status;
