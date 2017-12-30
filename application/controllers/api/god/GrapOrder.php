@@ -87,44 +87,47 @@ class GrapOrder extends MY_Controller
         // 订单信息
         $orderData = $this->order->scalar($order_id);
         if(!empty($orderData)){
-            $play_status = $this->getGodPlayStatus($this->user_id, $orderData['god_user_id'], $orderData['status']);
-            // 订单所需要展示的信息
-            if ($order_id) {
-                $orderInfo = array(
-                    'game_type'=>$orderData['game_type'],
-                    'game_mode'=>$orderData['game_mode'],
-                    'game_zone'=>$orderData['game_zone'],
-                    'game_num'=>$orderData['game_num'],
-                    'order_fee'=>$orderData['order_fee'],
-                    'game_level_id'=>$orderData['game_level_id'],
-                    'remark'=>$orderData['remark'],
-                    'device'=>$orderData['device'],
-                );
-                // 如果订单已完成，则追加战绩数据
-                if($play_status == 8){
-                    $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $order_id]);
-                    $victory_num = $OrderRecord_Model['victory_num'];
-                    $orderInfo['order_id'] = $order_id;
-                    $orderInfo['victory_num'] = $victory_num;
+            if($this->user_id == $orderData['god_user_id']){
+                $play_status = $this->getGodPlayStatus($this->user_id, $orderData['god_user_id'], $orderData['status']);
+                // 订单所需要展示的信息
+                if ($order_id) {
+                    $orderInfo = array(
+                        'game_type'=>$orderData['game_type'],
+                        'game_mode'=>$orderData['game_mode'],
+                        'game_zone'=>$orderData['game_zone'],
+                        'game_num'=>$orderData['game_num'],
+                        'order_fee'=>$orderData['order_fee'],
+                        'game_level_id'=>$orderData['game_level_id'],
+                        'remark'=>$orderData['remark'],
+                        'device'=>$orderData['device'],
+                    );
+                    // 如果订单已完成，则追加战绩数据
+                    if($play_status == 8){
+                        $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $order_id]);
+                        $victory_num = $OrderRecord_Model['victory_num'];
+                        $orderInfo['order_id'] = $order_id;
+                        $orderInfo['victory_num'] = $victory_num;
+                    }
                 }
-            }
-            //获取用户信息
-            $user_data = $this->user->getUserById($orderData['user_id']);
-            //返回用户信息
-            $user_info = array(
-                'nickname'=>emoji_to_string($user_data['nickname']),
-                'headimg_url'=>$user_data['headimg_url'],
-                'mobile'=>$user_data['mobile'],
-                'gender'=>$user_data['gender'],
-                'weixin_url'=>$user_data['weixin_url'],
-            );
-            //存在大神时获取大神信息
-            $god_info = ($order_id && $orderData['god_user_id']) ?
-                $this->getGodInfo($orderData['god_user_id'], $orderData['game_type']) : [];
-            $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
-                'order_info' => $orderInfo];
+                //获取用户信息
+                $user_data = $this->user->getUserById($orderData['user_id']);
+                //返回用户信息
+                $user_info = array(
+                    'nickname'=>emoji_to_string($user_data['nickname']),
+                    'headimg_url'=>$user_data['headimg_url'],
+                    'mobile'=>$user_data['mobile'],
+                    'gender'=>$user_data['gender'],
+                    'weixin_url'=>$user_data['weixin_url'],
+                );
+                //存在大神时获取大神信息
+                $god_info = ($order_id && $orderData['god_user_id']) ?
+                    $this->getGodInfo($orderData['god_user_id'], $orderData['game_type']) : [];
+                $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
+                    'order_info' => $orderInfo];
 
-            $this->responseJson(200, '获取成功', $data);
+                $this->responseJson(200, '获取成功', $data);
+            }
+
         }else{
             $this->responseJson(502, '该订单不存在');
         }

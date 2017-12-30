@@ -180,12 +180,7 @@ class Comm extends CI_Controller
     public function getQiniuUrl(){
         $serverId = $this->input->post('serverId');
         if(!empty($serverId)){
-            $config = [
-                'app_id' => C("AppId"),
-                'secret' => C("AppSecret"),
-            ];
-            $app = new Application($config);
-            $temporary = $app->material_temporary;
+            $temporary = $this->wechat->material_temporary;
             $content = $temporary->getStream($serverId);
             file_put_contents('/data/api.eachfight.com/public/wxUploads/' . $serverId . '.jpg', $content);
             $picpath = '/data/api.eachfight.com/public/wxUploads/' . $serverId . '.jpg';
