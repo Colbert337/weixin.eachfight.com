@@ -87,7 +87,7 @@ class GrapOrder extends MY_Controller
         // 订单信息
         $orderData = $this->order->scalar($order_id);
         if(!empty($orderData)){
-            if($this->user_id == $orderData['god_user_id']){
+//            if($this->user_id == $orderData['god_user_id']){
                 $play_status = $this->getGodPlayStatus($this->user_id, $orderData['god_user_id'], $orderData['status']);
                 // 订单所需要展示的信息
                 if ($order_id) {
@@ -126,7 +126,7 @@ class GrapOrder extends MY_Controller
                     'order_info' => $orderInfo];
 
                 $this->responseJson(200, '获取成功', $data);
-            }
+//            }
 
         }else{
             $this->responseJson(502, '该订单不存在');
