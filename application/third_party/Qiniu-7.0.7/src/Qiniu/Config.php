@@ -18,7 +18,7 @@ final class Config
     public function __construct(Zone $z = null)         // 构造函数，默认为zone0
     {
         if ($z === null) {
-            $z = Zone::zone0();
+            $z = Zone::zone1();
         }
         $this->upHost = $z->upHost;
         $this->upHostBackup = $z->upHostBackup;
