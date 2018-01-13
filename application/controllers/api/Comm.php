@@ -15,7 +15,13 @@ class Comm extends CI_Controller
         $this->load->config("wechat");
         $this->wechat = new Application(config_item("wechat"));
 
+        $this->load->model('Order_Model');
         $this->load->model('UserCashJournal_Model');
+        $this->load->model('OrderComment_Model');
+        $this->load->model('GameLevel_Model');
+        $this->load->model('God_Model');
+        //获取用户uid
+        $this->user_id = $this->getUserId();
     }
 
     /**
@@ -177,15 +183,16 @@ class Comm extends CI_Controller
     /**
      * 该方法实现从微信服务器拉取临时上传素材到本服务器
      */
-    public function getQiniuUrl(){
+    public function getQiniuUrl()
+    {
         $serverId = $this->input->post('serverId');
-        if(!empty($serverId)){
+        if (!empty($serverId)) {
             $temporary = $this->wechat->material_temporary;
             $content = $temporary->getStream($serverId);
             file_put_contents('/data/api.eachfight.com/public/wxUploads/' . $serverId . '.jpg', $content);
             $picpath = '/data/api.eachfight.com/public/wxUploads/' . $serverId . '.jpg';
             // 将图片上传到七牛
-            require_once APPPATH.'third_party/Qiniu-7.0.7/autoload.php';
+            require_once APPPATH . 'third_party/Qiniu-7.0.7/autoload.php';
             $this->output->enable_profiler(false);
             // qiniu账号
             $accessKey = config_item('qiniu.access_key');
@@ -195,11 +202,11 @@ class Comm extends CI_Controller
             // 要上传的空间
             $bucket = config_item('qiniu.bucket');
             // 上传到七牛后保存的文件名
-            $key = date("Ymd")."/".$serverId.".png";
+            $key = date("Ymd") . "/" . $serverId . ".png";
             // 生成上传 Token
             $policy = array(
-                'scope'=>$bucket.":".$key,
-                'insertOnly'=> 0,
+                'scope' => $bucket . ":" . $key,
+                'insertOnly' => 0,
             );
             $token = $auth->uploadToken($bucket, $key, 3600, $policy);
             // 要上传文件的本地路径
@@ -208,15 +215,114 @@ class Comm extends CI_Controller
             $uploadMgr = new Qiniu\Storage\UploadManager();
             // 调用 UploadManager 的 putFile 方法进行文件的上传
             list($ret, $err) = $uploadMgr->putFile($token, $key, $filePath);
-            echo "\n====> upload result: \n";
             if ($err !== null) {
+                $this->responseToJson(502, "上传失败");
                 var_dump($err);
             } else {
-                $qiniuUrl = config_item('photo.domain')."/".$bucket."/".$key;
-                $this->responseToJson(200, "上传成功",['picUrl'=>$qiniuUrl]);
+//              unlink('/data/api.eachfight.com/public/wxUploads/' . $serverId . '.jpg');
+                $qiniuUrl = config_item('photo.domain') . "/" . $bucket . "/" . $key;
+                $this->responseToJson(200, "上传成功", ['picUrl' => $qiniuUrl]);
             }
-        }else{
+        } else {
             $this->responseToJson(502, "serverId为空");
+        }
+    }
+
+    /**
+     * 个人中心  兼容用户端/大神端
+     */
+    public function userCenter()
+    {
+        $type = $this->input->post('type', 1);  //1=>用户端 2=>大神端
+        if (!in_array($type, [1, 2]))
+            $this->responseToJson(502, "type参数错误");
+        //钱包
+        $user_info = $this->User_Model->getUserById($this->user_id);
+        $user_wallet = [];
+        if ($user_info) {
+            $user_wallet = ['total_balance' => $user_info['available_balance'] + $user_info['freeze_balance'],
+                'available_balance' => $user_info['available_balance'], 'freeze_balance' => $user_info['freeze_balance'],
+                'withdrawal_limit' => $user_info['withdrawal_limit']];
+        }
+        //帐户明细
+        $user_cash_data = $this->UserCashJournal_Model->fetchAll(['user_id' => $this->user_id]);
+        $user_cash = [];
+        if ($user_cash_data) {
+            foreach ($user_cash_data as $key => $val) {
+                $user_cash[$key]['trade_type'] = trade_type()[$val['trade_type']] ?? '';
+                if ($val['trade_type'] == 4) {
+                    $user_cash[$key]['status'] = withdraw_status()[$val['withdraw_status']];
+                } elseif ($val['trade_type'] == 1) {
+                    $user_cash[$key]['status'] = recharge_status()[$val['recharge_status']];
+                } else {
+                    $user_cash[$key]['status'] = '已完成';
+                }
+
+                $user_cash[$key]['money'] = $val['money'];
+                $user_cash[$key]['create_time'] = $val['create_time'];
+                $user_cash[$key]['inorout'] = $val['inorout'];
+            }
+        }
+
+        //订单列表  1=>用户下单列表  2=>大神接单列表
+        $select_type = ($type == 1) ? 'user_id' : 'god_user_id';
+        $order_list_data = $this->Order_Model->fetchAll([$select_type => $this->user_id]);
+        $order_total = count($order_list_data);
+        $order_list = [];
+        if ($order_list_data) {
+            foreach ($order_list_data as $key => $val) {
+                $order_list[$key]['create_time'] = $val['create_time'];
+                $order_list[$key]['status'] = $this->changeStatus($val['status']);
+                $order_list[$key]['game_zone'] = game_zone()[$val['game_zone']];
+                $game_level = $this->GameLevel_Model->getGameLevelName($val['game_level_id']);
+                $order_list[$key]['game_level'] = $game_level->game_level;
+                $order_list[$key]['game_mode'] = game_mode()[$val['game_mode']];
+                $order_list[$key]['order_fee'] = $val['order_fee'];
+                $order_list[$key]['game_num'] = $val['game_num'];
+                $order_list[$key]['actual_victory'] = $val['actual_victory'];
+                $order_comment = $this->OrderComment_Model->scalarBy(['order_id' => $val['id']]);//评价星数
+                $order_list[$key]['star_num'] = $order_comment['star_num'] ?? '';
+                $order_list[$key]['id'] = $val['id'];
+            }
+        }
+
+        //大神的游戏数据
+        $god_game = [];
+        if ($type == 2) {
+            $god = $this->God_Model->fetchAll(['user_id' => $this->user_id, 'status' => 1]);
+            if ($god) {
+                foreach ($god as $val) {
+                    $game_level = $this->GameLevel_Model->getGameLevelName($val['game_level_id']);
+                    $god_game[] = ['game_type' => game_type()[$val['game_type']],
+                        'can_zone' => can_zone()[$val['can_zone']], 'game_level' => $game_level->game_level];
+                }
+            }
+        }
+
+        $this->responseToJson(200, '获取成功', ['user_wallet' => $user_wallet, 'user_cash' => $user_cash,
+            'order_total' => $order_total, 'order_list' => $order_list, 'weixin_url' => $user_info['weixin_url'] ?? '',
+            'god_game' => $god_game]);
+    }
+
+    //订单状态  已取消  进行中  申诉中  已完成
+    private function changeStatus($status)
+    {
+        switch ($status) {
+            case 2:
+            case 4:
+                return '已取消';
+                break;
+
+            case 8:
+                return '申诉中';
+                break;
+
+            case 9:
+                return '已完成';
+                break;
+
+            default:
+                return '进行中';
         }
     }
 

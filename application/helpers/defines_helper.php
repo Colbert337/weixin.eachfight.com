@@ -79,7 +79,7 @@ if (!function_exists('game_mode')) {
 if (!function_exists('is_except')) {
     function is_except()
     {
-        return array(1 => '计', 2 => '不计');
+        return array(1 => '计输赢', 2 => '不计输赢');
     }
 }
 

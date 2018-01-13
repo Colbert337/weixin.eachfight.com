@@ -45,16 +45,25 @@ class User extends CI_Controller
             $god_info = ($order_id && $user_order->god_user_id) ?
                 $this->getGodInfo($user_order->god_user_id, $user_order->game_type) : [];
 
-            $victory_num = [];
+            $victory_num = '';
             if ($order_id) {
                 $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $user_order->id]);
-                $victory_num = $OrderRecord_Model['victory_num'] ?? [];
+                $victory_num = $OrderRecord_Model['victory_num'] ?? '';
             }
 
-            $order_info = ($play_status == 1) ? [] : ['order_id' => $order_id, 'victory_num' => $victory_num];
+            $order_info =  ['order_id' => $order_id, 'victory_num' => $victory_num];
 
-            $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
-                'order_info' => $order_info];
+            if ($order_id && ($user_order->status >= 8)) {  //申诉订单详情
+                $game_level = $this->GameLevel_Model->getGameLevelName($user_order->game_level_id);
+                $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
+                    'order_info' => array_merge($order_info, ['game_type' => game_type()[$user_order->game_type],
+                        'game_zone' => game_zone()[$user_order->game_zone], 'game_level' => $game_level->game_level,
+                        'game_mode' => game_mode()[$user_order->game_mode], 'is_except' => is_except()[$user_order->is_except],
+                        'game_num' => $user_order->game_num, 'order_fee' => $user_order->order_fee])];
+            } else {
+                $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
+                    'order_info' => $order_info];
+            }
 
             $this->responseToJson(200, '获取成功', $data);
         } catch (\Exception $exception) {
@@ -186,7 +195,7 @@ class User extends CI_Controller
             try {
                 $result_1 = $this->Order_Model->update(['id' => $order_id],
                     ['status' => $change_arr[$type], 'clearinf_fee' => $clearinf_fee, 'rate_money' => $rate_money,
-                        'clearing_time' => date('Y-m-d H:i:s'), 'update_time' => date('Y-m-d H:i:s')]);
+                        'clearing_time' => date('Y-m-d H:i:s'), 'actual_victory' => $victory_num, 'update_time' => date('Y-m-d H:i:s')]);
                 //用户扣
                 $user_info = $this->User_Model->getUserById($user_id);
                 if (!isset($user_info['available_balance'])) {
@@ -419,8 +428,8 @@ class User extends CI_Controller
         );
 
         $weixin_user = $this->wechat->user->batchGet($god_openids)->toArray();
-        foreach ($weixin_user['user_info_list'] as $val){
-            if($val['subscribe'] == 0) continue;
+        foreach ($weixin_user['user_info_list'] as $val) {
+            if ($val['subscribe'] == 0) continue;
             $result = $notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($val['openid'])->send();
             log_message('info', '给大神推送模板消息opendid:' . $val['openid'] . '--' . json_encode($result));
         }
