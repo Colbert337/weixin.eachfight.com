@@ -221,8 +221,8 @@ class Comm extends CI_Controller
                 $this->responseToJson(502, "上传失败");
                 var_dump($err);
             } else {
-//              unlink('/data/api.eachfight.com/public/wxUploads/' . $serverId . '.jpg');
-                $qiniuUrl = config_item('photo.domain') . "/" . $bucket . "/" . $key;
+                //unlink('/data/api.eachfight.com/public/wxUploads/' . $serverId . '.jpg');
+                $qiniuUrl = config_item('photo.domain') . $key;
                 $this->responseToJson(200, "上传成功", ['picUrl' => $qiniuUrl]);
             }
         } else {
