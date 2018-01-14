@@ -53,7 +53,7 @@ class User extends CI_Controller
 
             $order_info =  ['order_id' => $order_id, 'victory_num' => $victory_num];
 
-            if ($order_id && ($user_order->status >= 8)) {  //申诉订单详情
+            if ($order_id && ($user_order->status >= 6)) {  //申诉订单详情
                 $game_level = $this->GameLevel_Model->getGameLevelName($user_order->game_level_id);
                 $data = ['play_status' => $play_status, 'user_info' => $user_info, 'god_info' => ($play_status == 1) ? [] : $god_info,
                     'order_info' => array_merge($order_info, ['game_type' => game_type()[$user_order->game_type],
