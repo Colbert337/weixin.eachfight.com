@@ -3,7 +3,7 @@
 /**************用户相关**********************/
 //用户性别
 if (!function_exists('user_gender')) {
-    function is_god()
+    function user_gender()
     {
         return array(1 => '男', 2 => '女', 0 => '未知');
     }
@@ -162,7 +162,7 @@ if (!function_exists('pay_type')) {
 if (!function_exists('recharge_status')) {
     function recharge_status()
     {
-        return array(1 => '充值中 ', 2 => '充值完成');
+        return array(1 => '充值中 ', 2 => '充值完成', 3 => '充值失败');
     }
 }
 
@@ -170,7 +170,7 @@ if (!function_exists('recharge_status')) {
 if (!function_exists('withdraw_status')) {
     function withdraw_status()
     {
-        return array(1 => '提现中 ', 2 => '提现完成');
+        return array(1 => '提现中 ', 2 => '提现完成', 3 => '提现失败');
     }
 }
 

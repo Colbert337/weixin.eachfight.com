@@ -132,7 +132,7 @@ $config = array(
         array(
             'field' => 'victory_num',
             'label' => 'victory_num',
-            'rules' => 'integer|required|in_list[1,2,3]',
+            'rules' => 'integer|required|in_list[0,1,2,3]',
             'errors' => array(
                 'required' => 'victory_num参数错误'
             ),

@@ -51,7 +51,7 @@ class User extends CI_Controller
                 $victory_num = $OrderRecord_Model['victory_num'] ?? '';
             }
 
-            $order_info =  ['order_id' => $order_id, 'victory_num' => $victory_num];
+            $order_info = ['order_id' => $order_id, 'victory_num' => $victory_num];
 
             if ($order_id && ($user_order->status >= 6)) {  //申诉订单详情
                 $game_level = $this->GameLevel_Model->getGameLevelName($user_order->game_level_id);
@@ -308,9 +308,15 @@ class User extends CI_Controller
         }
         $order_id = $params['order_id'];
         $order = $this->Order_Model->scalarBy(['id' => $order_id]);
+        if(!$order) $this->responseToJson(502, '该订单不存在');
         if ($order['user_id'] != $user_id) $this->responseToJson(502, '非该用户下的订单');
         if ($order['status'] != 7) $this->responseToJson(502, '订单状态异常');
         if ($order['is_shensu']) $this->responseToJson(502, '该订单已申诉');
+
+        $OrderRecord_Model = $this->OrderRecord_Model->scalarBy(['order_id' => $order_id]);
+        if (!isset($OrderRecord_Model['victory_num']) || $params['victory_num'] >= $OrderRecord_Model['victory_num'])
+            $this->responseToJson(502, '胜利局数错误');
+        $order_fee = $order['order_fee'];
 
         $this->db->trans_begin();
         try {
@@ -319,7 +325,12 @@ class User extends CI_Controller
                 'create_time' => date('Y-m-d H:i:s')]);
 
             $result_2 = $this->Order_Model->update(['id' => $order_id], ['status' => 8, 'is_shensu' => 1, 'update_time' => date('Y-m-d H:i:s')]);
-            if ($result_1 && $result_2) {
+            //减少用户账户可用余额增加用户账户冻结余额
+            $user_info = $this->User_Model->getUserById($user_id);
+            $result_3 = $this->User_Model->update(['id' => $user_id], ['available_balance' => $user_info['available_balance'] - $order_fee,
+                'freeze_balance' => $user_info['freeze_balance'] + $order_fee]);
+
+            if ($result_1 && $result_2 && $result_3) {
                 $this->db->trans_commit();
                 $this->responseToJson(200, '申诉提交成功,等待后续处理结果');
             } else {

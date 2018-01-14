@@ -230,19 +230,21 @@ class Comm extends CI_Controller
 
     /**
      * 个人中心  兼容用户端/大神端
+     * @author  guochao
      */
     public function userCenter()
     {
         $type = $this->input->post('type', 1);  //1=>用户端 2=>大神端
         if (!in_array($type, [1, 2]))
             $this->responseToJson(502, "type参数错误");
-        //钱包
-        $user_info = $this->User_Model->getUserById($this->user_id);
-        $user_wallet = [];
-        if ($user_info) {
-            $user_wallet = ['total_balance' => $user_info['available_balance'] + $user_info['freeze_balance'],
-                'available_balance' => $user_info['available_balance'], 'freeze_balance' => $user_info['freeze_balance'],
-                'withdrawal_limit' => $user_info['withdrawal_limit']];
+        //我的个人信息 钱包
+        $user_info_data = $this->User_Model->getUserById($this->user_id);
+        $user_info = [];
+        if ($user_info_data) {
+            $user_info = ['headimg_url' => $user_info_data['headimg_url'], 'nickname' => $user_info_data['nickname'],
+                'gender' => user_gender()[$user_info_data['gender']], 'total_balance' => $user_info_data['available_balance'] + $user_info_data['freeze_balance'],
+                'available_balance' => $user_info_data['available_balance'], 'freeze_balance' => $user_info_data['freeze_balance'],
+                'withdrawal_limit' => $user_info_data['withdrawal_limit'], 'weixin_url' => $user_info_data['weixin_url']];
         }
         //帐户明细
         $user_cash_data = $this->UserCashJournal_Model->fetchAll(['user_id' => $this->user_id]);
@@ -273,6 +275,7 @@ class Comm extends CI_Controller
             foreach ($order_list_data as $key => $val) {
                 $order_list[$key]['create_time'] = $val['create_time'];
                 $order_list[$key]['status'] = $this->changeStatus($val['status']);
+                $order_list[$key]['game_type'] = game_type()[$val['game_type']];
                 $order_list[$key]['game_zone'] = game_zone()[$val['game_zone']];
                 $game_level = $this->GameLevel_Model->getGameLevelName($val['game_level_id']);
                 $order_list[$key]['game_level'] = $game_level->game_level;
@@ -299,9 +302,8 @@ class Comm extends CI_Controller
             }
         }
 
-        $this->responseToJson(200, '获取成功', ['user_wallet' => $user_wallet, 'user_cash' => $user_cash,
-            'order_total' => $order_total, 'order_list' => $order_list, 'weixin_url' => $user_info['weixin_url'] ?? '',
-            'god_game' => $god_game]);
+        $this->responseToJson(200, '获取成功', ['user_info' => $user_info, 'user_cash' => $user_cash,
+            'order_total' => $order_total, 'order_list' => $order_list, 'god_game' => $god_game]);
     }
 
     //订单状态  已取消  进行中  申诉中  已完成
@@ -323,6 +325,80 @@ class Comm extends CI_Controller
 
             default:
                 return '进行中';
+        }
+    }
+
+    /**
+     * 大神收入提现
+     * @author  guochao
+     */
+    public function godWithdraw()
+    {
+        //获取用户uid
+        $user_id = $this->getUserId();
+        $user_data = $this->User_Model->getUserById($user_id);
+        if (!isset($user_data['openid']) || !$user_data['openid'])
+            $this->responseToJson(502, '该用户还未注册');
+
+        $god = $this->God_Model->scalarBy(['user_id' => $user_id, 'status' => 1]);
+        if (!$god) {
+            $this->responseToJson(502, '你不是大神或者大神身份被冻结,无法提现');
+        }
+
+        $money = $this->input->post('money');
+        if (!$money || !is_numeric($money) || strstr($money, '.'))
+            $this->responseToJson(502, '输入提现金额错误');
+
+        if ($money > intval($user_data['withdrawal_limit']))  //取整
+            $this->responseToJson(502, '提现金额不可大于提现额度');
+
+        $this->db->trans_begin();
+        try {
+            //插入提现记录
+            $result_1 = $this->UserCashJournal_Model->insert(['user_id' => $user_id, 'trade_type' => 4,
+                'money' => $money, 'inorout' => 2, 'pay_type' => 1, 'withdraw_status' => 1,
+                'create_time' => date('Y-m-d H:i:s'), 'original_available_balance' => $user_data['available_balance'],
+                'current_available_balance' => $user_data['available_balance'] - $money]);
+            //更新用户表  减少可用和可提现额度
+            $result_2 = $this->User_Model->update(['id' => $user_id], ['available_balance' => $user_data['available_balance'] - $money,
+                'withdrawal_limit' => $user_data['withdrawal_limit'] - $money, 'update_time' => date('Y-m-d H:i:s')]);
+
+            if ($result_1 && $result_2) {
+                $this->db->trans_commit();
+                $this->responseToJson(200, '提现提交成功,等待后续处理结果');
+            } else {
+                $this->db->trans_rollback();
+                throw new \Exception('提现提交异常');
+            }
+        } catch (\Exception $exception) {
+            $this->db->trans_rollback();
+            log_message('error', '大神收入提现接口异常' . $exception->getMessage());
+            $this->responseToJson(502, $exception->getMessage());
+        }
+    }
+
+    /**
+     * 用户添加或更新自己的二维码
+     * @author  guochao
+     */
+    public function changeWeixinUrl()
+    {
+        //获取用户uid
+        $user_id = $this->getUserId();
+        $weixin_url = $this->input->post('weixin_url');
+        if (!$weixin_url)
+            $this->responseToJson(502, 'weixin_url参数错误');
+
+        $user_data = $this->User_Model->getUserById($user_id);
+        if($user_data['weixin_url'] == $weixin_url)
+            $this->responseToJson(502, '该图片与原图一样,请不要反复上传');
+
+        $result = $this->User_Model->update(['id' => $user_id], ['weixin_url' => $weixin_url,
+            'update_time' => date('Y-m-d H:i:s')]);
+        if ($result) {
+            $this->responseToJson(200, '提交成功');
+        } else {
+            $this->responseToJson(502, '提交失败');
         }
     }
 
