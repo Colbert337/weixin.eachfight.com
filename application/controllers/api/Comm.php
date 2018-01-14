@@ -20,8 +20,8 @@ class Comm extends CI_Controller
         $this->load->model('OrderComment_Model');
         $this->load->model('GameLevel_Model');
         $this->load->model('God_Model');
-        //获取用户uid
-        $this->user_id = $this->getUserId();
+        //获取用户uid  一定不要这样写
+//      $this->user_id = $this->getUserId();
     }
 
     /**
@@ -236,11 +236,13 @@ class Comm extends CI_Controller
      */
     public function userCenter()
     {
+        //获取用户uid
+        $user_id = $this->getUserId();
         $type = $this->input->post('type', 1);  //1=>用户端 2=>大神端
         if (!in_array($type, [1, 2]))
             $this->responseToJson(502, "type参数错误");
         //我的个人信息 钱包
-        $user_info_data = $this->User_Model->getUserById($this->user_id);
+        $user_info_data = $this->User_Model->getUserById($user_id);
         $user_info = [];
         if ($user_info_data) {
             $user_info = ['headimg_url' => $user_info_data['headimg_url'], 'nickname' => $user_info_data['nickname'],
@@ -249,7 +251,7 @@ class Comm extends CI_Controller
                 'withdrawal_limit' => $user_info_data['withdrawal_limit'], 'weixin_url' => $user_info_data['weixin_url']];
         }
         //帐户明细
-        $user_cash_data = $this->UserCashJournal_Model->fetchAll(['user_id' => $this->user_id]);
+        $user_cash_data = $this->UserCashJournal_Model->fetchAll(['user_id' => $user_id]);
         $user_cash = [];
         if ($user_cash_data) {
             foreach ($user_cash_data as $key => $val) {
@@ -270,7 +272,7 @@ class Comm extends CI_Controller
 
         //订单列表  1=>用户下单列表  2=>大神接单列表
         $select_type = ($type == 1) ? 'user_id' : 'god_user_id';
-        $order_list_data = $this->Order_Model->fetchAll([$select_type => $this->user_id]);
+        $order_list_data = $this->Order_Model->fetchAll([$select_type => $user_id]);
         $order_total = count($order_list_data);
         $order_list = [];
         if ($order_list_data) {
@@ -294,7 +296,7 @@ class Comm extends CI_Controller
         //大神的游戏数据
         $god_game = [];
         if ($type == 2) {
-            $god = $this->God_Model->fetchAll(['user_id' => $this->user_id, 'status' => 1]);
+            $god = $this->God_Model->fetchAll(['user_id' => $user_id, 'status' => 1]);
             if ($god) {
                 foreach ($god as $val) {
                     $game_level = $this->GameLevel_Model->getGameLevelName($val['game_level_id']);
