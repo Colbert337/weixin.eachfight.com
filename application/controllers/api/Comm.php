@@ -135,6 +135,8 @@ class Comm extends CI_Controller
     //微信异步通知
     public function payNotify()
     {
+        log_message('info', '微信异步通知接口时间：' .date('Y-m-d H:i:s'));
+
         $response = $this->wechat->payment->handleNotify(function ($notify, $successful) {
             log_message('info', '微信异步通知接口返回数据：' . json_encode($notify));
             $out_trade_no = $notify->out_trade_no;
