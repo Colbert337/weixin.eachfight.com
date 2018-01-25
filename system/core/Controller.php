@@ -116,6 +116,20 @@ class CI_Controller
      */
     protected function getUserId()
     {
+        //特殊处理
+        $admin_sign = $this->input->post('admin_sign');
+        if ($admin_sign) {
+            $user_id = $this->input->post('user_id');
+            $sign = verify(['order_id' => $this->input->post('order_id'),
+                'user_id' => $user_id]);
+            if ($admin_sign == $sign) {
+                log_message('info', '脚本正常请求参数:' . json_encode($this->input->post()));
+                return $user_id;
+            } else {
+                log_message('info', '异常请求:' . json_encode($this->input->post()));
+            }
+        }
+
         $token = $this->input->get_post('token', true);
         log_message('info', 'getUserId获取到的数据token:' . $token);
         if (!$token) $this->responseToJson(502, 'token参数缺少');

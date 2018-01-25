@@ -100,3 +100,7 @@ defined('ORDER_COMPLETE_GAME')       OR define('ORDER_COMPLETE_GAME', 6); //完�
 defined('ORDER_GOD_SUB_ORDER')       OR define('ORDER_GOD_SUB_ORDER', 7); //大神提交战绩
 defined('ORDER_USER_SHENSU')         OR define('ORDER_USER_SHENSU', 8); //用户发起申诉
 defined('ORDER_COMPLETE_ORDER')      OR define('ORDER_COMPLETE_ORDER', 9); //订单完成（胜0局或用户确认战绩或申诉完成）
+
+
+//Verify key
+defined('VERIFY_KEY')        OR define('VERIFY_KEY', '644c04f2109a2e7412a2b2080df0bcd9');

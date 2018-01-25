@@ -62,3 +62,16 @@ if (!function_exists('replace_emoji')) {
         return $text;
     }
 }
+
+//验证
+if (!function_exists('verify')) {
+
+    function verify($params, $signKey = '')
+    {
+        empty($signKey) && $signKey = VERIFY_KEY;
+        ksort($params);
+        $signString = urldecode(http_build_query($params, '&'));
+
+        return md5($signString . $signKey);
+    }
+}
