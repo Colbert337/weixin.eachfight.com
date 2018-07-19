@@ -7,10 +7,17 @@ class Home extends CI_Controller
     public function __construct()
     {
         parent::__construct();
+
+//        $this->load->model('GameLevel_Model');
     }
 
     public function index()
     {
+        $GameLevel_Model = new GameLevel_Model();
+        $data = $GameLevel_Model->getGameLevel(1);
+        $this->responseToJson(200, '获取成功', $data);
+
+
         $proArr = array(
             array('id' => 1, 'name' => '特等奖', 'v' => 1),
             array('id' => 2, 'name' => '一等奖', 'v' => 5),

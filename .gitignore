@@ -33,3 +33,5 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 #application/config/wechat.php
 
 application/controllers/Zip.php
+
+/session_file/
