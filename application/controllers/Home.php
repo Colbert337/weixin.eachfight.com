@@ -8,7 +8,7 @@ class Home extends CI_Controller
     {
         parent::__construct();
 
-//        $this->load->model('GameLevel_Model');
+        $this->load->model('GameLevel_Model');
     }
 
     public function index()
