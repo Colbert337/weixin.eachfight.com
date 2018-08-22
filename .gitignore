@@ -35,3 +35,5 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 application/controllers/Zip.php
 
 /session_file/
+
+public/wxUploads/
