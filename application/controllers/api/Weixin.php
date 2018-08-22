@@ -77,6 +77,9 @@ class Weixin extends CI_Controller
         log_message('info', 'weboauth获取到的code:' . $code);
 
         try {
+
+            log_message('info', '授权获取用户随机token:' . 100);
+
             $user = $this->wechat->oauth->user();
             $data = $user->getOriginal();
             //随机token
@@ -84,6 +87,9 @@ class Weixin extends CI_Controller
             //给token赋值并加密 设置有效期7200s
 //            $this->cache->redis->save($token, md5($data['openid'] . 'eachfight'), 7200);
             //开发时token有效期设置1天 86400s
+
+            log_message('info', '授权获取用户随机token:' . 200);
+
             $this->cache->redis->save($token, md5($data['openid'] . 'eachfight'), 86400);
             log_message('info', '授权获取用户随机token:' . $token);
             //没有注册过 注册
