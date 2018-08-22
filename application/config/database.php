@@ -77,9 +77,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => '127.0.0.1',
-	'username' => 'root',
-	'password' => 'txptJVw6uL%xda',
+	'hostname' => '47.100.209.123',
+	'username' => 'eachfight',
+	'password' => 'A6YwGSWPHF8wD7Dk',
 	'database' => 'eachfight',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => 't_',
