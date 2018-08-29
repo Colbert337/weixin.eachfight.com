@@ -1,14 +1,13 @@
 {
-	"description": "The CodeIgniter framework",
-	"name": "codeigniter/framework",
+	"description": "eachfight",
+	"name": "347653397/eachfight",
 	"type": "project",
 	"homepage": "https://codeigniter.com",
 	"license": "MIT",
 	"support": {
-		"forum": "http://forum.codeigniter.com/",
-		"wiki": "https://github.com/bcit-ci/CodeIgniter/wiki",
-		"slack": "https://codeigniterchat.slack.com",
-		"source": "https://github.com/bcit-ci/CodeIgniter"
+		"issues": "https://github.com/347653397/api.eachfight.com/issues",
+		"forum": "https://github.com/347653397",
+		"source": "https://github.com/347653397/api.eachfight.com"
 	},
 	"require": {
 		"php": ">=5.3.7",
