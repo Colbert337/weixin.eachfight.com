@@ -37,3 +37,6 @@ application/controllers/Zip.php
 /session_file/
 
 public/wxUploads/
+
+application/config/database.php
+application/config/redis.php
