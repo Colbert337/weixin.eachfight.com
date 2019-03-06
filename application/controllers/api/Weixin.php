@@ -18,7 +18,22 @@ class Weixin extends CI_Controller
     //微信用户进行公众号授权
     public function oauth()
     {
-        exit;
+        $notice = $this->wechat->notice;
+        $templateId = 'tic8-fQPEnGzK38IlyQBNsVbcesdEOtp1a_m7UUN3Kc';
+        $url = 'http://weixin.eachfight.com/#/mantio/';  //大神端入口地址
+        $data = array(
+            "first" => "收到一笔新的陪练需求",
+            "keyword1" => time(),
+        );
+
+        $weixin_user = $this->wechat->user->batchGet(['oDfTV1C71uJfWGaI5vcMWrktCg3c'])->toArray();
+        foreach ($weixin_user['user_info_list'] as $val) {
+            if ($val['subscribe'] == 0) continue;
+            $result = $notice->uses($templateId)->withUrl($url)->andData($data)->andReceiver($val['openid'])->send();
+            log_message('info', '给大神推送模板消息opendid:' . $val['openid'] . '--' . json_encode($result));
+        }
+        dump($weixin_user);exit;
+
         $callback = urldecode($this->input->get('url')) . '?code=200';
         if (!$this->session->has_userdata($this->wechat_key)) {
             $response = $this->wechat->oauth->with(['state' => urlencode($callback)])->redirect();

@@ -137,7 +137,8 @@ class User extends CI_Controller
                 . device()[$params['device']] . game_zone()[$params['game_zone']]
                 . '|' . $game_level . '|' . $params['game_num'] . '局';
             //给满足条件的大神推送新订单消息
-            $god_openids = $this->getSendNoticeGods($params);
+            $god_openids = ['oDfTV1C71uJfWGaI5vcMWrktCg3c','o05NB08e8bdzMV7Kc6Nj3-0zwYaU'];
+//            $god_openids = $this->getSendNoticeGods($params);
             $this->sendNotice($god_openids, $order_fee, $order_info, $insert_id);
             $this->responseToJson(200, '下单成功');
         } else {
@@ -429,7 +430,7 @@ class User extends CI_Controller
     private function sendNotice($god_openids, $order_fee, $order_info, $order_id)
     {
         $notice = $this->wechat->notice;
-        $templateId = 'A4XHF6abZqWpDg6f0lLvpJceFQ7Fb0GwnWVpptNfdm4';
+        $templateId = 'tic8-fQPEnGzK38IlyQBNsVbcesdEOtp1a_m7UUN3Kc';
         $url = 'http://weixin.eachfight.com/#/mantio/' . $order_id;  //大神端入口地址
         $data = array(
             "first" => "收到一笔新的陪练需求",
