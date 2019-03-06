@@ -153,49 +153,50 @@
 
   <!-- 高清方案脚本 -->
   <script type="text/javascript" src="./fontFlex.js"></script>
-<link href="/dist/index.b3fec8bb.css" rel="stylesheet"></head>
+  <link href="/index.b3fec8bb.css" rel="stylesheet"></head>
 
 <body>
-  <div id="loadingSd">
-    <div id="loading-center">
-      <div id="loading-center-absolute">
-        <div class="double-bounce">
-          <div class="double-bounce1"></div>
-          <div class="double-bounce2"></div>
-        </div>
-        <br/>
-        <p style="color:#666;font-size:0.35rem">(⊙o⊙) 正在拼命加载中...</p>
+<div id="loadingSd">
+  <div id="loading-center">
+    <div id="loading-center-absolute">
+      <div class="double-bounce">
+        <div class="double-bounce1"></div>
+        <div class="double-bounce2"></div>
       </div>
+      <br/>
+      <p style="color:#666;font-size:0.35rem">(⊙o⊙) 正在拼命加载中...</p>
     </div>
   </div>
-  <div id="root"></div>
-  <!-- FastClick -->
-  <script type="text/javascript" src="./fastclick.js"></script>
-  <script type="text/javascript" src="./jweixin-1.2.0.js"></script>
-  <script>
-    if ('addEventListener' in document) {
-      // window.onpageshow = function () {
-      //   setTimeout(function () { // 修复 ios 客户端跳转后再返回触发 popstate 事件时已经设置 sessionStorage 存储，导致直接关闭页面
-      //     sessionStorage.setItem('back', true)
-      //   })
-      // }
+</div>
+<div id="root"></div>
+<!-- FastClick -->
+<script type="text/javascript" src="./fastclick.js"></script>
+<script type="text/javascript" src="./jweixin-1.2.0.js"></script>
+<script>
+  if ('addEventListener' in document) {
+    // window.onpageshow = function () {
+    //   setTimeout(function () { // 修复 ios 客户端跳转后再返回触发 popstate 事件时已经设置 sessionStorage 存储，导致直接关闭页面
+    //     sessionStorage.setItem('back', true)
+    //   })
+    // }
 
-      // window.onpagehide = function () {
-      //   sessionStorage.removeItem('back')
-      // }
+    // window.onpagehide = function () {
+    //   sessionStorage.removeItem('back')
+    // }
 
-      window.addEventListener('load', function () {
-        // document.addEventListener('touchmove', function(e) {
-        //     e.preventDefault();
-        // });
-        document.getElementById("loadingSd").className = "loadingHidden";
-        setTimeout(function () {
-          document.getElementById("loadingSd").style.display = "none";
-        }, 0);
-        FastClick.attach(document.body);
-      }, false);
-    }
-  </script>
-<script type="text/javascript" src="/dist/index.4a8ff64f.js"></script></body>
+    window.addEventListener('load', function () {
+      // document.addEventListener('touchmove', function(e) {
+      //     e.preventDefault();
+      // });
+      document.getElementById("loadingSd").className = "loadingHidden";
+      setTimeout(function () {
+        document.getElementById("loadingSd").style.display = "none";
+      }, 0);
+      FastClick.attach(document.body);
+    }, false);
+  }
+</script>
+<script type="text/javascript" src="/index.4a8ff64f.js"></script></body>
 
 </html>
+No newline at end of file
