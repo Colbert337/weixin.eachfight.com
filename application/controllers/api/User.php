@@ -137,7 +137,7 @@ class User extends CI_Controller
                 . device()[$params['device']] . game_zone()[$params['game_zone']]
                 . '|' . $game_level . '|' . $params['game_num'] . '局';
             //给满足条件的大神推送新订单消息
-            $god_openids = ['oDfTV1C71uJfWGaI5vcMWrktCg3c','o05NB08e8bdzMV7Kc6Nj3-0zwYaU'];
+            $god_openids = ['oDfTV1C71uJfWGaI5vcMWrktCg3c'];
 //            $god_openids = $this->getSendNoticeGods($params);
             $this->sendNotice($god_openids, $order_fee, $order_info, $insert_id);
             $this->responseToJson(200, '下单成功');
