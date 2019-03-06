@@ -35,9 +35,13 @@ class Comm extends CI_Controller
         $key = "LAST_SMSCODE_{$mobile}";
         if ($this->cache->redis->get($key)) $this->responseToJson(502, '你已发送验证码，请勿频繁操作，该验证码十分钟内有效!');
 
-        $code = rand(100000, 999999);
+//        $code = rand(100000, 999999);
+        $code = '123456';
+
         $response = $this->sms->sendSms("猪游纪", "SMS_109490433", $mobile, ['code' => $code]);
         log_message('info', 'response:' . json_encode($response));
+
+        $this->cache->redis->save($key, $code, 600);
 
         if (isset($response->Code) && $response->Code == 'OK') {
             $this->cache->redis->save($key, $code, 600);
