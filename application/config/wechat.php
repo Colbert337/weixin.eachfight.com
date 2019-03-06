@@ -19,12 +19,10 @@ $config["wechat"] = [
     /*
      * 账号基本信息，请从微信公众平台/开放平台获取
      */
-    'app_id'  => 'wxa3fbda51f46ed9ec',         // AppID
-//    'app_id'  => 'wxabcdb4c431362dae',         // AppID
-    'secret'  => '0200741d37ba4fc25886e8f87f15b24e',     // AppSecret
-//    'secret'  => 'dfeeb5544b6603721442f889219eb746',     // AppSecret
-    'token'   => 't9HazcCJVOcB4Rh5',          // Token
-    'aes_key' => 'pfVaL4o8Ra0Dy8orJAch3BGag0hpwkxBUK5HU2fwl9U',                    // EncodingAESKey
+    'app_id'  => 'wx91689ea35f67da7a',         // AppID
+    'secret'  => 'f4a6857f689290d0ad15c516ceb375d5',     // AppSecret
+    'token'   => 't9HazcCJVOcB4Rh5',          // Token 用不到
+    'aes_key' => 'pfVaL4o8Ra0Dy8orJAch3BGag0hpwkxBUK5HU2fwl9U',                    // EncodingAESKey 用不到
 
     /*
      * 日志配置
